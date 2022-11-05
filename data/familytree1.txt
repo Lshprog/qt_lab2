@@ -1,0 +1,38 @@
+Samuel Grayson::Doctor::Barber
+	Jeremy R. Ontiveros::Doctor::Doctor
+		Timothy K. Howard::Party planner::Party planner
+		Israel C. Rowe::Party planner::Shop assistant
+	William S. Stlaurent::Party planner::Professor
+		Eugene K. Kirk::Party planner::Flower arranger
+		Michael M. Greene::Party planner::Councillor
+	Don S. Elsass::Party planner::Labourer
+	Nelson A. James::Party planner::Domestic cleaner
+Tyron M. Travis::Party planner::Carpet fitter
+	Felipe J. Ramirez::Party planner::Genealogist
+		Cameron E. Koehn::Party planner::Cleric
+			John L. Rodriguez::Party planner::Hairdresser
+				Jeff R. Olsen::Party planner::Electrician
+				Robert K. Dansby::Party planner::Gas fitter
+		Matthew C. Spence::Party planner::Researcher
+		Clinton K. McCaleb::Party planner::Plasterer
+	Marvin S. Gomez::Party planner::Careers advisor
+Joseph N. Nichols::Party planner::Pharmacist
+	James S. Brazier::Party planner::Museum Curator
+		John K. Jeter::Party planner::Musician
+	Harry M. Forbes::Party planner::Farmer
+		John A. Allen::Party planner::Jockey
+			Jesse W. Joachim::Party planner::Coastguard
+		Vince T. Delacruz::Party planner::Engineer
+	Samuel B. Lopez::Party planner::Librarian
+Edward S. Shea::Party planner::Health visitor
+	Reginald C. Smith::Party planner::Sailor
+		Brian J. Oppenheim::Party planner::Mechanic
+Louis D. Hodges::Party planner::Inventor
+	George L. Wolak::Party planner::Carpenter
+		Kenneth L. Gonzalez::Party planner::Fork-lift driver
+	Jeff C. Wolff::Party planner::Gardener
+		Michael H. Pals::Party planner::Diplomat
+			Eddie G. Calloway::Party planner::Physiotherapist
+Larry D. Monger::Party planner::Governor
+	Nicholas M. Rembert::Party planner::Chiropractor
+		Henry J. Skipworth::Party planner::Financial advisor
