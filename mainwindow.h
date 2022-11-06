@@ -24,6 +24,8 @@ private slots:
 
     void on_actionShow_info_triggered();
 
+    void on_treeView_clicked(const QModelIndex &index);
+
 private:
     //void readFile();
     //Hyperlink *rootHyperlink;

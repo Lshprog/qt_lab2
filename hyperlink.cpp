@@ -43,6 +43,11 @@ QVariant Hyperlink::data(int column) const
     return QVariant();
 }
 
+bool Hyperlink::setData(int column, const QVariant &value)
+{
+    this->data(column) = value;
+}
+
 int Hyperlink::row() const
 {
     if(parent){

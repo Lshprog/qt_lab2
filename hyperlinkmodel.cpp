@@ -100,12 +100,36 @@ Qt::ItemFlags HyperlinkModel::flags(const QModelIndex &index) const
     return QAbstractItemModel::flags(index);
 }
 
+bool HyperlinkModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    if(role!=Qt::EditRole)
+        return false;
+    Hyperlink *hyperlink = static_cast<Hyperlink*>(index.internalPointer());
+
+    bool result = hyperlink->setData(index.column(),value);
+
+    if(result)
+        emit dataChanged(index,index,{role});
+
+    return result;
+}
+
+bool HyperlinkModel::insertRows(int row, int count, const QModelIndex &parent)
+{
+
+}
+
+bool HyperlinkModel::removeRows(int row, int count, const QModelIndex &parent)
+{
+
+}
+
 
 
 void HyperlinkModel::readFile()
 {
 
-    QString filename = "C:\\Users\\onisa\\source\\repos\\qt_project_2\\qt-lab2-lastversion\\data\\familytree1.txt";
+    QString filename = "/Users/oleksiionishchenko/Documents/qtprojects/qt_lab2/data/familytree1.txt";
     QFile inputFile(filename);
 
     if(inputFile.open(QIODevice::ReadOnly)){

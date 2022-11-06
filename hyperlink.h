@@ -14,6 +14,7 @@ public:
     Hyperlink* child(int row);
     int childCount() const;
     QVariant data(int column) const;
+    bool setData(int column,const QVariant &value);
     int row() const;
     Hyperlink *parentHyperlink();
     void setCategoryStatus(bool status);
