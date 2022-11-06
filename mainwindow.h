@@ -26,11 +26,16 @@ private slots:
 
     void on_treeView_clicked(const QModelIndex &index);
 
+    void on_actionAdd_row_triggered();
+
+    void on_actionAdd_category_triggered();
+
 private:
     //void readFile();
     //Hyperlink *rootHyperlink;
     //QStringList getInfo(QString lineString);
     Ui::MainWindow *ui;
+    HyperlinkModel *mymodel;
     //HyperlinkModel *mymodel;
 
 };

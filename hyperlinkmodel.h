@@ -22,21 +22,21 @@ public:
     QVariant data(const QModelIndex &index, int role) const override;
     QVariant headerData(int section,Qt::Orientation orientation, int role)const override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;
+    bool setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role);
     bool setData(const QModelIndex &index, const QVariant &value, int role) override;
-    bool insertRows(int row, int count, const QModelIndex &parent) override;
-    bool removeRows(int row, int count, const QModelIndex &parent) override;
 
+    bool insertRows(int row, int count, const QModelIndex &parent) override;
+    bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
+    Hyperlink *getHyperlinkFromIndex(const QModelIndex &index) const;
 
 
 
 private:
     //void showInfo();
     void readFile();
-    QStringList getInfo(QString lineString);
+
+    QVector<QVariant> getInfo(QString lineString);
     Hyperlink *rootHyperlink;
-
-
-    // QAbstractItemModel interface
 
 };
 

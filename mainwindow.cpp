@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
 
-    HyperlinkModel *mymodel = new HyperlinkModel(this);
+    mymodel = new HyperlinkModel(this);
 
     ui->treeView->setModel(mymodel);
 
@@ -54,5 +54,35 @@ void MainWindow::on_treeView_clicked(const QModelIndex &index)
         ui->actionAdd_category->setDisabled(true);
         ui->actionAdd_hyperlink->setDisabled(true);
     }
+}
+
+
+void MainWindow::on_actionAdd_row_triggered()
+{
+    QModelIndex index = ui->treeView->selectionModel()->currentIndex();
+
+    if(!mymodel->insertRow(index.row()+1,index.parent()))
+        return;
+
+    for(int column = 0;column < mymodel->columnCount(index.parent());++column){
+        QModelIndex child = mymodel->index(index.row()+1,column,index.parent());
+        mymodel->setData(child,QVariant("[Emtpy Cell]"),Qt::EditRole);
+    }
+}
+
+
+void MainWindow::on_actionAdd_category_triggered()
+{
+    QModelIndex index = ui->treeView->selectionModel()->currentIndex();
+
+    if(!mymodel->insertRow(index.row()+1,index.parent()))
+        return;
+
+    for(int column = 0;column < mymodel->columnCount(index.parent());++column){
+        QModelIndex child = mymodel->index(index.row()+1,column,index.parent());
+        mymodel->setData(child,QVariant("[Emtpy Cell]"),Qt::EditRole);
+    }
+    Hyperlink* temp = mymodel->getHyperlinkFromIndex(index);
+    temp->setCategoryStatus(true);
 }
 

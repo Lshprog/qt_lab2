@@ -43,6 +43,7 @@
     <addaction name="actionShow_info"/>
     <addaction name="actionAdd_category"/>
     <addaction name="actionAdd_hyperlink"/>
+    <addaction name="actionAdd_row"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuActions"/>
@@ -71,6 +72,11 @@
   <action name="actionAdd_hyperlink">
    <property name="text">
     <string>Add hyperlink</string>
+   </property>
+  </action>
+  <action name="actionAdd_row">
+   <property name="text">
+    <string>Add row</string>
    </property>
   </action>
  </widget>

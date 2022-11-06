@@ -8,27 +8,39 @@
 class Hyperlink
 {
 public:
-    Hyperlink(const QString name,const QString hyperlink, const QString description,bool category, Hyperlink* parent = nullptr);
+    Hyperlink(const QVector<QVariant> &data, Hyperlink* parent = nullptr);
     ~Hyperlink();
     void appendChild(Hyperlink* child);
     Hyperlink* child(int row);
     int childCount() const;
+
     QVariant data(int column) const;
     bool setData(int column,const QVariant &value);
+
     int row() const;
     Hyperlink *parentHyperlink();
+
     void setCategoryStatus(bool status);
     bool getCategoryStatus();
+    bool getCategoryStatusOfChild(int row);
+    int getChildrenSize();
+    void insertCategory(Hyperlink* child);
 
-    void showinfo();
+    int columnCount() const;
+    bool insertChildren(int position, int count, int columns);
+    bool removeChildren(int position, int count);
+    int childNumber() const;
+
+    void showInfo();
 
 
 
 private:
     QList<Hyperlink* > children;
-    QString name;
-    QString hyperlink;
-    QString description;
+//    QString name;
+//    QString hyperlink;
+//    QString description;
+    QVector<QVariant> columnFields;
     bool category;
     Hyperlink *parent;
 };
