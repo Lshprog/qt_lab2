@@ -100,7 +100,7 @@ Qt::ItemFlags HyperlinkModel::flags(const QModelIndex &index) const
     if(!index.isValid())
         return Qt::ItemIsEnabled;
 
-    return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
+    return QAbstractItemModel::flags(index);
 }
 
 bool HyperlinkModel::setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role)
@@ -130,21 +130,21 @@ bool HyperlinkModel::setData(const QModelIndex &index, const QVariant &value, in
     return result;
 }
 
-bool HyperlinkModel::insertRows(int row, int count, const QModelIndex &parent)
-{
-    Hyperlink *hyperlinkParent = getHyperlinkFromIndex(parent);
-    bool success;
+//bool HyperlinkModel::insertRow(int row, const QModelIndex &parent)
+//{
+//    Hyperlink *hyperlinkParent = getHyperlinkFromIndex(parent);
+//    bool success;
 
-    while((hyperlinkParent->getCategoryStatusOfChild(row)) && (row<hyperlinkParent->getChildrenSize())){
-        row++;
-    }
+////    while((hyperlinkParent->getCategoryStatusOfChild(row)) && (row<hyperlinkParent->getChildrenSize())){
+////        row++;
+////    }
 
-    beginInsertRows(parent,row,row + count - 1);
-    success = hyperlinkParent->insertChildren(row,count,rootHyperlink->columnCount());
-    endInsertRows();
+//    beginInsertRows(parent,row,row);
+//    success = hyperlinkParent->insertChildren(row,0,rootHyperlink->columnCount());
+//    endInsertRows();
 
-    return success;
-}
+//    return success;
+//}
 
 bool HyperlinkModel::removeRows(int row, int count, const QModelIndex &parent)
 {
@@ -158,10 +158,23 @@ bool HyperlinkModel::removeRows(int row, int count, const QModelIndex &parent)
     return success;
 }
 
+//bool HyperlinkModel::insertCategory(int row,const QModelIndex &parent)
+//{
+//    Hyperlink *hyperlinkParent = getHyperlinkFromIndex(parent);
+//    bool success;
+
+//    beginInsertRows(parent,row,row);
+//    success = hyperlinkParent->insertChildren(row,1,rootHyperlink->columnCount());
+//    endInsertRows();
+
+//    return success;
+
+//}
+
 void HyperlinkModel::readFile()
 {
-    QString filename = "C:/Users/onisa/source/repos/qt_project_2/qt-lab2-lastversion/data/familytree1.txt";;
-    //QString filename = "/Users/oleksiionishchenko/Documents/qtprojects/qt_lab2/data/familytree1.txt";
+    //QString filename = "C:/Users/onisa/source/repos/qt_project_2/qt-lab2-lastversion/data/familytree1.txt";;
+    QString filename = "/Users/oleksiionishchenko/Documents/qtprojects/qt_lab2/data/familytree1.txt";
     QFile inputFile(filename);
 
     if(inputFile.open(QIODevice::ReadOnly)){
@@ -227,6 +240,22 @@ Hyperlink *HyperlinkModel::getHyperlinkFromIndex(const QModelIndex &index) const
             return link;
     }
     return rootHyperlink;
+}
+
+bool HyperlinkModel::insertnewrowchild(int row, const QModelIndex &parent, Hyperlink *link)
+{
+    Hyperlink *hyperlinkParent = getHyperlinkFromIndex(parent);
+    bool success;
+
+//    while((hyperlinkParent->getCategoryStatusOfChild(row)) && (row<hyperlinkParent->getChildrenSize())){
+//        row++;
+//    }
+
+    beginInsertRows(parent,row,row);
+    success = hyperlinkParent->insertChild(row,link);
+    endInsertRows();
+
+    return success;
 }
 
 QVector<QVariant> HyperlinkModel::getInfo(QString lineString)

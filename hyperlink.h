@@ -24,10 +24,11 @@ public:
     bool getCategoryStatus();
     bool getCategoryStatusOfChild(int row);
     int getChildrenSize();
+
     void insertCategory(Hyperlink* child);
 
     int columnCount() const;
-    bool insertChildren(int position, int count, int columns);
+    bool insertChild(int position, Hyperlink* child);
     bool removeChildren(int position, int count);
     int childNumber() const;
 

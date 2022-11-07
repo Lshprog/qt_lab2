@@ -25,9 +25,13 @@ public:
     bool setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role);
     bool setData(const QModelIndex &index, const QVariant &value, int role) override;
 
-    bool insertRows(int row, int count, const QModelIndex &parent) override;
+    bool insertRow(int row, const QModelIndex &parent);
     bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
+    bool insertCategory(int row,const QModelIndex &index);
     Hyperlink *getHyperlinkFromIndex(const QModelIndex &index) const;
+
+
+    bool insertnewrowchild(int row, const QModelIndex &parent, Hyperlink *link);
 
 
 

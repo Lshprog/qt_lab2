@@ -15,9 +15,19 @@ public:
     explicit Dialog(QWidget *parent = nullptr);
     ~Dialog();
 
+    QString returnName();
+    QString returnLink();
+    QString returnDescription();
+
+    void setName(QString data);
+    void setLink(QString data);
+    void setDescription(QString data);
+
 private slots:
 
+    void on_buttonBox_accepted();
 
+    void on_buttonBox_rejected();
 
 private:
     Ui::Dialog *ui;

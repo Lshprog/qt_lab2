@@ -90,7 +90,7 @@ int Hyperlink::getChildrenSize()
 
 void Hyperlink::insertCategory(Hyperlink *child)
 {
-    children.insert(children.begin(),child);
+    children.push_front(child);
 }
 
 int Hyperlink::columnCount() const
@@ -98,16 +98,13 @@ int Hyperlink::columnCount() const
     return columnFields.count();
 }
 
-bool Hyperlink::insertChildren(int position, int count, int columns)
+bool Hyperlink::insertChild(int position, Hyperlink* child)
 {
     int pos=position;
     if(pos < 0||pos>children.size())
         return false;
-    for(int row = 0; row < count; row++){
-        QVector<QVariant> data(columns);
-        Hyperlink *link = new Hyperlink(data,this);
-        this->children.insert(pos,link);
-    }
+
+    this->children.insert(pos,child);
 
     return true;
 }

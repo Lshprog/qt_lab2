@@ -42,8 +42,14 @@
     </property>
     <addaction name="actionShow_info"/>
     <addaction name="actionAdd_category"/>
-    <addaction name="actionAdd_hyperlink"/>
     <addaction name="actionAdd_row"/>
+    <addaction name="separator"/>
+    <addaction name="actionAdd_hyperlink"/>
+    <addaction name="actionAdd_subcategory"/>
+    <addaction name="separator"/>
+    <addaction name="actionEdit_row"/>
+    <addaction name="separator"/>
+    <addaction name="actionDelete_row"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuActions"/>
@@ -77,6 +83,21 @@
   <action name="actionAdd_row">
    <property name="text">
     <string>Add row</string>
+   </property>
+  </action>
+  <action name="actionAdd_subcategory">
+   <property name="text">
+    <string>Add subcategory</string>
+   </property>
+  </action>
+  <action name="actionEdit_row">
+   <property name="text">
+    <string>Edit row</string>
+   </property>
+  </action>
+  <action name="actionDelete_row">
+   <property name="text">
+    <string>Delete row</string>
    </property>
   </action>
  </widget>

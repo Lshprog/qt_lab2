@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <QFile>
 #include "hyperlinkmodel.h"
-
+#include "hyperlinkdelegate.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -29,6 +29,16 @@ private slots:
     void on_actionAdd_row_triggered();
 
     void on_actionAdd_category_triggered();
+
+    void on_actionAdd_hyperlink_triggered();
+
+    void on_actionAdd_subcategory_triggered();
+
+    void addInfoFromDialog(int endrow,const QModelIndex &index,Hyperlink *parent, bool status);
+
+    void on_actionEdit_row_triggered();
+
+    void on_actionDelete_row_triggered();
 
 private:
     //void readFile();

@@ -11,6 +11,7 @@ CONFIG += c++17
 SOURCES += \
     dialog.cpp \
     hyperlink.cpp \
+    hyperlinkdelegate.cpp \
     hyperlinkmodel.cpp \
     main.cpp \
     mainwindow.cpp
@@ -18,6 +19,7 @@ SOURCES += \
 HEADERS += \
     dialog.h \
     hyperlink.h \
+    hyperlinkdelegate.h \
     hyperlinkmodel.h \
     mainwindow.h
 
