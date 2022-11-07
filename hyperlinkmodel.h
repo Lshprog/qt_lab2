@@ -30,6 +30,7 @@ public:
     bool insertCategory(int row,const QModelIndex &index);
     Hyperlink *getHyperlinkFromIndex(const QModelIndex &index) const;
 
+    void makelisthypelinks(QList<QString> *list);
 
     bool insertnewrowchild(int row, const QModelIndex &parent, Hyperlink *link);
 

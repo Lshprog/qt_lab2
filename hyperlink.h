@@ -32,6 +32,8 @@ public:
     bool removeChildren(int position, int count);
     int childNumber() const;
 
+    bool writeListOfLinks(QList<QString> *list);
+
     void showInfo();
 
 

@@ -35,6 +35,7 @@
     </property>
     <addaction name="actionRead_file"/>
     <addaction name="actionSave_file"/>
+    <addaction name="actionSave_list_of_hyperlinks"/>
    </widget>
    <widget class="QMenu" name="menuActions">
     <property name="title">
@@ -98,6 +99,11 @@
   <action name="actionDelete_row">
    <property name="text">
     <string>Delete row</string>
+   </property>
+  </action>
+  <action name="actionSave_list_of_hyperlinks">
+   <property name="text">
+    <string>Save list of hyperlinks</string>
    </property>
   </action>
  </widget>

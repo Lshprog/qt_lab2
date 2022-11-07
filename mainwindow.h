@@ -40,6 +40,8 @@ private slots:
 
     void on_actionDelete_row_triggered();
 
+    void on_actionSave_list_of_hyperlinks_triggered();
+
 private:
     //void readFile();
     //Hyperlink *rootHyperlink;

@@ -100,7 +100,7 @@ Qt::ItemFlags HyperlinkModel::flags(const QModelIndex &index) const
     if(!index.isValid())
         return Qt::ItemIsEnabled;
 
-    return QAbstractItemModel::flags(index);
+    return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
 }
 
 bool HyperlinkModel::setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role)
@@ -173,8 +173,8 @@ bool HyperlinkModel::removeRows(int row, int count, const QModelIndex &parent)
 
 void HyperlinkModel::readFile()
 {
-    //QString filename = "C:/Users/onisa/source/repos/qt_project_2/qt-lab2-lastversion/data/familytree1.txt";;
-    QString filename = "/Users/oleksiionishchenko/Documents/qtprojects/qt_lab2/data/familytree1.txt";
+    QString filename = "C:/Users/onisa/source/repos/qt_project_2/qt-lab2-lastversion/data/familytree1.txt";;
+    //QString filename = "/Users/oleksiionishchenko/Documents/qtprojects/qt_lab2/data/familytree1.txt";
     QFile inputFile(filename);
 
     if(inputFile.open(QIODevice::ReadOnly)){
@@ -240,6 +240,12 @@ Hyperlink *HyperlinkModel::getHyperlinkFromIndex(const QModelIndex &index) const
             return link;
     }
     return rootHyperlink;
+}
+
+void HyperlinkModel::makelisthypelinks(QList<QString> *list)
+{
+    rootHyperlink->writeListOfLinks(list);
+
 }
 
 bool HyperlinkModel::insertnewrowchild(int row, const QModelIndex &parent, Hyperlink *link)

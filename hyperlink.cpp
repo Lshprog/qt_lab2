@@ -131,6 +131,19 @@ int Hyperlink::childNumber() const
     return 0;
 }
 
+bool Hyperlink::writeListOfLinks(QList<QString> *list)
+{
+    if(!this->children.empty()){
+        list->append(this->data(1).toString());
+        foreach(Hyperlink* child,this->children){
+            if(!child->category)
+                list->append(child->data(1).toString());
+            else
+                child->writeListOfLinks(list);
+        }
+    }
+}
+
 
 void Hyperlink::showInfo()
 {

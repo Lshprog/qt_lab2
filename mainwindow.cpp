@@ -2,7 +2,7 @@
 #include "ui_mainwindow.h"
 #include <QTextStream>
 #include "dialog.h"
-
+#include <QFileDialog>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -171,5 +171,34 @@ void MainWindow::on_actionDelete_row_triggered()
     QModelIndex index = ui->treeView->selectionModel()->currentIndex();
 
     mymodel->removeRows(index.row(),1,index.parent());
+}
+
+
+void MainWindow::on_actionSave_list_of_hyperlinks_triggered()
+{
+    QString filename= QFileDialog::getSaveFileName(this, "Save As");
+
+        if (filename.isEmpty())
+            return;
+
+        QFile file(filename);
+
+        //Open the file
+        if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+            return;
+
+        QTextStream out(&file);
+
+        QList<QString> hyperlinks;
+        mymodel->makelisthypelinks(&hyperlinks);
+
+        for(int i = 1;i<hyperlinks.size();i++){
+            out<<hyperlinks[i].toUtf8()<<"\n";
+        }
+
+
+        file.close();
+
+
 }
 

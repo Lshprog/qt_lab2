@@ -1,17 +1,22 @@
 #include "hyperlinkdelegate.h"
 #include "QtCore/qglobal.h"
 #include <QLabel>
+#include <QDesktopServices>
+#include <QEvent>
 
 HyperlinkDelegate::HyperlinkDelegate(QObject *parent):  QStyledItemDelegate(parent)
 {
 
 }
 
+/*
 QWidget *HyperlinkDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     if(index.column() == 1){
-        QLabel *hyplink = new QLabel(parent);
-        hyplink->setText("<a href=\" "+ index.data().toString() +"\">"+index.data().toString()+"</a>");
+        ClickableLabel *hyplink = new ClickableLabel(parent);
+        //hyplink->setText("<a href=\""+ index.data().toString()+"\">"+index.data().toString()+"</a>");
+        hyplink->setTextInteractionFlags(Qt::LinksAccessibleByMouse);
+
         hyplink->setOpenExternalLinks(true);
         return hyplink;
     }
@@ -22,11 +27,14 @@ QWidget *HyperlinkDelegate::createEditor(QWidget *parent, const QStyleOptionView
 void HyperlinkDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
 {
     if(index.column() == 1){
-        QLabel *hyplink = static_cast<QLabel*>(editor);
+        ClickableLabel *hyplink = static_cast<ClickableLabel*>(editor);
         QString link = index.model()->data(index,Qt::DisplayRole).toString();
         hyplink->setText(link);
         hyplink->setTextFormat(Qt::RichText);
+        hyplink->setTextInteractionFlags(Qt::LinksAccessibleByMouse);
         hyplink->setOpenExternalLinks(true);
+
+        qDebug()<<"At least soemthing";
 
     }
     else
@@ -36,10 +44,14 @@ void HyperlinkDelegate::setEditorData(QWidget *editor, const QModelIndex &index)
 void HyperlinkDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
 {
     if(index.column() == 1){
-        QLabel *hyplink = static_cast<QLabel*>(editor);
-        hyplink->setOpenExternalLinks(true);
+        ClickableLabel *hyplink = static_cast<ClickableLabel*>(editor);
+
         hyplink->setTextFormat(Qt::RichText);
+
         model->setData(index,hyplink->text(),Qt::EditRole);
+        hyplink->setTextInteractionFlags(Qt::LinksAccessibleByMouse);
+        hyplink->setOpenExternalLinks(true);
+        qDebug()<<"/////At least soemthing !!!!!!!!!";
 
     }
     else{
@@ -47,7 +59,7 @@ void HyperlinkDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
     }
 
 }
-
+*/
 void HyperlinkDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     Q_UNUSED(index);
@@ -65,16 +77,36 @@ void HyperlinkDelegate::paint(QPainter *painter,
                           const QStyleOptionViewItem &option,
                           const QModelIndex &index) const
 {
-    QStyleOptionViewItem opt(option);
+    if(index.column() ==1){
 
-    QLabel *label = new QLabel;
-    label->setText("<a href=\" "+ index.data().toString() +"\">"+index.data().toString()+"</a>");
-    //label->setTextFormat(Qt::RichText);
-    label->setOpenExternalLinks(true);
-    label->setGeometry(option.rect);
-    label->setStyleSheet("QLabel { background-color : transparent; }");
+        QStyleOptionViewItem opt(option);
+        ClickableLabel *label = new ClickableLabel;
+        label->setText("<a href=\""+ index.data().toString() +"\">"+index.data().toString()+"</a>");
+        //label->setTextFormat(Qt::RichText);
+        //label->setText(index.data().toString());
+        label->setTextInteractionFlags(Qt::LinksAccessibleByMouse);
+        label->setOpenExternalLinks(true);
 
-    painter->translate(option.rect.topLeft());
-    label->render(painter);
-    painter->translate(-option.rect.topLeft());
+        label->setGeometry(option.rect);
+
+        //label->setStyleSheet("QLabel { background-color : transparent; }");
+
+        painter->translate(option.rect.topLeft());
+        label->render(painter);
+        painter->translate(-option.rect.topLeft());
+
+    }
+    else {
+        QStyledItemDelegate::paint(painter,option,index);
+    }
+}
+
+
+bool HyperlinkDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
+{
+    if(index.column() == 1 && event->type() == QEvent::MouseButtonDblClick){
+        QDesktopServices::openUrl(index.data().toString());
+        return true;
+    }
+    return false;
 }
