@@ -16,7 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
     HyperlinkDelegate *hyplinkdelegate = new HyperlinkDelegate(this);
 
 
-    ui->treeView->setItemDelegateForColumn(1,hyplinkdelegate);
+    ui->treeView->setItemDelegate(hyplinkdelegate);
     ui->treeView->setModel(mymodel);
 
     //ui->treeView->selectionModel()->selectedIndexes()
