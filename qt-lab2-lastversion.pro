@@ -15,7 +15,8 @@ SOURCES += \
     hyperlinkdelegate.cpp \
     hyperlinkmodel.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    myfiltermodel.cpp
 
 HEADERS += \
     clickablelabel.h \
@@ -23,7 +24,8 @@ HEADERS += \
     hyperlink.h \
     hyperlinkdelegate.h \
     hyperlinkmodel.h \
-    mainwindow.h
+    mainwindow.h \
+    myfiltermodel.h
 
 FORMS += \
     dialog.ui \

@@ -1,10 +1,12 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QSortFilterProxyModel>
 #include <QMainWindow>
 #include <QFile>
 #include "hyperlinkmodel.h"
 #include "hyperlinkdelegate.h"
+#include "myfiltermodel.h"
 
 
 QT_BEGIN_NAMESPACE
@@ -42,12 +44,16 @@ private slots:
 
     void on_actionSave_list_of_hyperlinks_triggered();
 
+    void on_lineEdit_textChanged(const QString &arg1);
+
 private:
     //void readFile();
     //Hyperlink *rootHyperlink;
     //QStringList getInfo(QString lineString);
     Ui::MainWindow *ui;
     HyperlinkModel *mymodel;
+    MyFilterModel *newproxymodel;
+    //QSortFilterProxyModel *newproxymodel;
     //HyperlinkModel *mymodel;
 
 };

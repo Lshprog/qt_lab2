@@ -1,13 +1,11 @@
 #include "hyperlink.h"
 #include "qvariant.h"
-
+#include "QMessageBox"
 
 
 Hyperlink::Hyperlink(const QVector<QVariant> &data, Hyperlink *parent)
 {
-//    this->name = name;
-//    this->hyperlink = hyperlink;
-//    this->description = description;
+
     this->category = false;
     this->parent = parent;
     columnFields = data;
@@ -20,6 +18,14 @@ Hyperlink::~Hyperlink()
 
 void Hyperlink::appendChild(Hyperlink *child)
 {
+//    for(int i=0;i<children.size();i++){
+//        if(children[i]->columnFields[0] == child->columnFields[0] ||children[i]->columnFields[1] == child->columnFields[1]||children[i]->columnFields[1] == child->columnFields[1]){
+//            QMessageBox messageBox;
+//            messageBox.critical(0,"Error","An error has occured !");
+//            messageBox.setFixedSize(500,200);
+//            return;
+//        }
+//    }
     if(child->getCategoryStatus())
         this->children.insert(this->children.begin(),child);
     else

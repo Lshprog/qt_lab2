@@ -1,4 +1,6 @@
 #include "hyperlinkmodel.h"
+#include <QFont>
+#include <QColor>
 
 HyperlinkModel::HyperlinkModel(QObject *parent)
     : QAbstractItemModel{parent}
@@ -6,6 +8,11 @@ HyperlinkModel::HyperlinkModel(QObject *parent)
      QVector<QVariant> rootData;
      rootData<<"Name"<<"Hyperlink"<<"Description";
      rootHyperlink = new Hyperlink(rootData);
+//     QVector<QVariant> allurlsData;
+//     allurlsData<<"all urls"<<" "<<" ";
+//     Hyperlink* allurls = new Hyperlink(allurlsData,rootHyperlink);
+//     allurls->setCategoryStatus(true);
+//     rootHyperlink->appendChild(allurls);
      readFile();
 }
 
@@ -80,6 +87,26 @@ QVariant HyperlinkModel::data(const QModelIndex &index, int role) const
         Hyperlink *hyperlink = static_cast<Hyperlink*>(index.internalPointer());
         return hyperlink->data(index.column());
     }
+    else if(role == HyperlinkRoles::CategoryRole){
+        Hyperlink *hyperlink = static_cast<Hyperlink*>(index.internalPointer());
+        return hyperlink->getCategoryStatus();
+    }
+    else if (role == Qt::ForegroundRole && index.column() == 1)
+            return QColor(Qt::blue);
+    else if (role == Qt::FontRole && index.column() == 1){
+        QFont font;
+        font.setUnderline(true);
+        return font;
+    }
+    else if(role == Qt::FontRole && index.column() == 0){
+        Hyperlink *hyperlink = static_cast<Hyperlink*>(index.internalPointer());
+        if(hyperlink->getCategoryStatus()){
+            QFont font;
+            font.setBold(true);
+            return font;
+        }
+        return QVariant();
+    }
     else
         return QVariant();
 
@@ -120,6 +147,7 @@ bool HyperlinkModel::setData(const QModelIndex &index, const QVariant &value, in
 {
     if(role!=Qt::EditRole)
         return false;
+
     Hyperlink *hyperlink = getHyperlinkFromIndex(index);
 
     bool result = hyperlink->setData(index.column(),value);
@@ -181,7 +209,7 @@ void HyperlinkModel::readFile()
         int lastIndentation = 0;
 
         Hyperlink *lastParent = rootHyperlink;
-        Hyperlink *lastHyperlink = nullptr;
+        Hyperlink *lastHyperlink = 0;
 
         QTextStream in(&inputFile);
 
@@ -190,7 +218,7 @@ void HyperlinkModel::readFile()
 
             int currentIndentation = line.count("\t");
 
-            //qDebug()<<currentIndentation;
+            qDebug()<<currentIndentation;
 
             QVector<QVariant> infoList = getInfo(line);
 
@@ -200,6 +228,7 @@ void HyperlinkModel::readFile()
                 Hyperlink *hyperlink = new Hyperlink(infoList,lastParent);
                 lastParent->appendChild(hyperlink);
                 lastHyperlink = hyperlink;
+                qDebug()<<hyperlink->data(0)<<"1";
 
             }
             else if(diffIndent > 0){
@@ -208,8 +237,8 @@ void HyperlinkModel::readFile()
 
                 lastParent = lastHyperlink;
                 Hyperlink *hyperlink = new Hyperlink(infoList,lastParent);
+                qDebug()<<hyperlink->data(0)<<"2";
                 lastParent->appendChild(hyperlink);
-
                 lastHyperlink = hyperlink;
             }
             else{
@@ -218,16 +247,16 @@ void HyperlinkModel::readFile()
                     lastParent = lastParent->parentHyperlink();
 
                 Hyperlink *hyperlink = new Hyperlink(infoList,lastParent);
+                qDebug()<<hyperlink->data(0)<<"3";
                 lastParent->appendChild(hyperlink);
                 lastHyperlink = hyperlink;
 
             }
 
-
-
             lastIndentation = currentIndentation;
 
         }
+
         inputFile.close();
     }
 }
@@ -263,6 +292,12 @@ bool HyperlinkModel::insertnewrowchild(int row, const QModelIndex &parent, Hyper
 
     return success;
 }
+
+Hyperlink *HyperlinkModel::returnroot() const
+{
+    return rootHyperlink;
+}
+
 
 QVector<QVariant> HyperlinkModel::getInfo(QString lineString)
 {

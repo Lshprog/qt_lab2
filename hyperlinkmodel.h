@@ -10,8 +10,13 @@ class HyperlinkModel : public QAbstractItemModel
     Q_OBJECT
 
 public:
+
+
     explicit HyperlinkModel(QObject *parent = nullptr);
     ~HyperlinkModel() override;
+
+     enum HyperlinkRoles{CategoryRole=Qt::UserRole,};
+
 
     QModelIndex index(int row, int column, const QModelIndex &parent) const override;
     QModelIndex parent(const QModelIndex &child)const override;
@@ -34,12 +39,13 @@ public:
 
     bool insertnewrowchild(int row, const QModelIndex &parent, Hyperlink *link);
 
+    Hyperlink* returnroot() const;
 
 
 private:
     //void showInfo();
-    void readFile();
 
+    void readFile();
     QVector<QVariant> getInfo(QString lineString);
     Hyperlink *rootHyperlink;
 

@@ -3,72 +3,10 @@
 #include <QLabel>
 #include <QDesktopServices>
 #include <QEvent>
+#include <QAbstractTextDocumentLayout>
 
 HyperlinkDelegate::HyperlinkDelegate(QObject *parent):  QStyledItemDelegate(parent)
 {
-
-}
-
-
-//QWidget *HyperlinkDelegate::createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const
-//{
-//    if(index.column() == 1){
-//        ClickableLabel *hyplink = new ClickableLabel(parent);
-//        //hyplink->setText("<a href=\""+ index.data().toString()+"\">"+index.data().toString()+"</a>");
-
-//        qDebug()<<"At least soemthing11";
-//        hyplink->setTextInteractionFlags(Qt::LinksAccessibleByMouse);
-//        hyplink->setStyleSheet("QLabel{ background-color : transparent;font-weight: bold}");
-//        hyplink->setOpenExternalLinks(true);
-//        return hyplink;
-//    }
-//    else{
-//        return QStyledItemDelegate::createEditor(parent,option,index);
-//        qDebug()<<"At least soemthing11";
-//    }
-//}
-
-//void HyperlinkDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
-//{
-//    if(index.column() == 1){
-//        ClickableLabel *hyplink = static_cast<ClickableLabel*>(editor);
-//        QString link = index.model()->data(index,Qt::DisplayRole).toString();
-//        hyplink->setText(link);
-//        hyplink->setStyleSheet("QLabel{ background-color : transparent;font-weight: bold}");;
-//        hyplink->setTextInteractionFlags(Qt::LinksAccessibleByMouse);
-//        hyplink->setOpenExternalLinks(true);
-
-//        qDebug()<<"At least soemthing";
-
-//    }
-//    else
-//        QStyledItemDelegate::setEditorData(editor,index);
-//}
-
-//void HyperlinkDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
-//{
-//    if(index.column() == 1){
-//        ClickableLabel *hyplink = static_cast<ClickableLabel*>(editor);
-
-//        hyplink->setStyleSheet("QLabel{ background-color : transparent;font-weight: bold}");
-
-//        model->setData(index,QVariant::fromValue(hyplink->text()),Qt::EditRole);
-//        hyplink->setTextInteractionFlags(Qt::LinksAccessibleByMouse);
-//        hyplink->setOpenExternalLinks(true);
-//        qDebug()<<"/////At least soemthing !!!!!!!!!";
-
-//    }
-//    else{
-//        QStyledItemDelegate::setModelData(editor,model,index);
-//    }
-
-//}
-
-void HyperlinkDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option, const QModelIndex &index) const
-{
-    Q_UNUSED(index);
-
-    editor->setGeometry(option.rect);
 
 }
 
@@ -81,52 +19,31 @@ void HyperlinkDelegate::paint(QPainter *painter,
                           const QStyleOptionViewItem &option,
                           const QModelIndex &index) const
 {
-    if(index.column() ==1){
+   QStyleOptionViewItem opt = option;
+   //initStyleOption(&opt, index);
+//   Hyperlink *cur = static_cast<Hyperlink*>(index.internalPointer());
+//   if(index.column()==0 && cur->getCategoryStatus())
+//       opt.font.setBold(true);
+//   else if(index.column() == 1){
+//       opt.font.setUnderline(true);
+//   }
 
-        QStyleOptionViewItem opt(option);
-        ClickableLabel *label = new ClickableLabel;
-        label->setText("<a href=\""+ index.data().toString() +"\">"+index.data().toString()+"</a>");
-        //label->setTextFormat(Qt::RichText);
-        //label->setText(index.data().toString());
-        //label->setTextInteractionFlags(Qt::LinksAccessibleByMouse);
-        //label->setTextInteractionFlags(Qt::TextSelectableByMouse);
-        label->setOpenExternalLinks(true);
+   QStyledItemDelegate::paint(painter, opt, index);
 
-        label->setGeometry(option.rect);
-        label->setStyleSheet("QLabel { background-color : transparent; }");
-        painter->translate(option.rect.topLeft());
-        label->render(painter);
-        painter->translate(-option.rect.topLeft());
-
-    }
-    else if(index.column() == 0){
-        QStyleOptionViewItem opt(option);
-        Hyperlink * currenthyp = static_cast<Hyperlink*>(index.internalPointer());
-        QLabel *label = new QLabel;
-        label->setText(index.data().toString());
-
-        label->setStyleSheet("QLabel { background-color : transparent;}");
-
-        if(currenthyp->getCategoryStatus()){
-            label->setStyleSheet("QLabel{ background-color : transparent;font-weight: bold}");
-            qDebug()<<"Rabotaet";
-        }
-        label->setGeometry(option.rect);
-        painter->translate(option.rect.topLeft());
-        label->render(painter);
-        painter->translate(-option.rect.topLeft());
-    }
-    else {
-        QStyledItemDelegate::paint(painter,option,index);
-    }
 }
 
 
 bool HyperlinkDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index)
 {
-    if(index.column() == 1 && event->type() == QEvent::MouseButtonDblClick){
-        QDesktopServices::openUrl(index.data().toString());
-        return true;
+    if(index.column() == 1 && event->type() == QEvent::MouseButtonPress){
+        QMouseEvent *keyEvent = static_cast<QMouseEvent *>(event);
+        if(keyEvent->button() == Qt::RightButton){
+            QDesktopServices::openUrl(index.data().toString());
+            return true;
+        }
     }
+
     return false;
 }
+
+
