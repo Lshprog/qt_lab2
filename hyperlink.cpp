@@ -104,6 +104,20 @@ int Hyperlink::columnCount() const
     return columnFields.count();
 }
 
+bool Hyperlink::insertChildren(int position, int count, int columns)
+{
+    int pos=position;
+    if(pos < 0||pos>children.size())
+        return false;
+    for(int row = 0;row<count;row++){
+        QVector<QVariant> data(columns);
+        Hyperlink *link = new Hyperlink(data,this);
+        this->children.insert(pos,link);
+    }
+
+    return true;
+}
+
 bool Hyperlink::insertChild(int position, Hyperlink* child)
 {
     int pos=position;
@@ -137,16 +151,45 @@ int Hyperlink::childNumber() const
     return 0;
 }
 
-bool Hyperlink::writeListOfLinks(QList<QString> *list)
+void Hyperlink::writeListOfLinks(QList<QString> *list)
 {
     if(!this->children.empty()){
-        list->append(this->data(1).toString());
+        //list->append(this->data(1).toString());
         foreach(Hyperlink* child,this->children){
             if(!child->category)
                 list->append(child->data(1).toString());
             else
                 child->writeListOfLinks(list);
         }
+    }
+}
+
+void Hyperlink::listInfo(QList<QString> *list,int tabcounter)
+{
+    if(!this->children.empty()){
+        QString cur;
+        for(int i=0;i<tabcounter;i++)
+            cur=cur+"\t";
+        cur =cur+ this->data(0).toString()+"::"+this->data(1).toString()+"::"+this->data(2).toString();
+        list->append(cur);
+        foreach(Hyperlink *child,this->children)
+        {
+            //cur = "";
+            //for(int i=0;i<tabcounter;i++)
+                //cur=cur+"\t";
+            //cur =cur+ child->data(0).toString()+"::"+child->data(1).toString()+"::"+child->data(2).toString();
+            //list->append(cur);
+            tabcounter++;
+            child->listInfo(list,tabcounter);
+            tabcounter--;
+        }
+    }
+    else{
+        QString cur;
+        for(int i=0;i<tabcounter;i++)
+            cur=cur+"\t";
+        cur =cur+ this->data(0).toString()+"::"+this->data(1).toString()+"::"+this->data(2).toString();
+        list->append(cur);
     }
 }
 

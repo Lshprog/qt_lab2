@@ -1,9 +1,10 @@
 #ifndef HYPERLINKMODEL_H
 #define HYPERLINKMODEL_H
-
+#include <QSortFilterProxyModel>
 #include <QAbstractItemModel>
 #include "hyperlink.h"
 #include <QFile>
+#include "dialog.h"
 
 class HyperlinkModel : public QAbstractItemModel
 {
@@ -34,9 +35,10 @@ public:
     bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
     bool insertCategory(int row,const QModelIndex &index);
     Hyperlink *getHyperlinkFromIndex(const QModelIndex &index) const;
-
+    bool insertRows(int row, int count, const QModelIndex &parent) override;
     void makelisthypelinks(QList<QString> *list);
-
+    void addInfoFromDialog(const QModelIndex &index,Hyperlink *parent, bool status);
+    bool makeListInfo(QList<QString> *list);
     bool insertnewrowchild(int row, const QModelIndex &parent, Hyperlink *link);
 
     Hyperlink* returnroot() const;
@@ -44,10 +46,11 @@ public:
 
 private:
     //void showInfo();
-
+    //bool hasToBeDisplayed(const QModelIndex index) const;
     void readFile();
     QVector<QVariant> getInfo(QString lineString);
     Hyperlink *rootHyperlink;
+
 
 };
 

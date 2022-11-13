@@ -6,20 +6,51 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>1259</width>
+    <height>614</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout">
+   <layout class="QGridLayout" name="gridLayout_3">
     <item row="0" column="0">
      <widget class="QTreeView" name="treeView"/>
     </item>
     <item row="1" column="0">
-     <widget class="QLineEdit" name="lineEdit"/>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>Filter by Name</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>Filter by Hyperlink</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="label_6">
+        <property name="text">
+         <string>Filter by Description</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLineEdit" name="lineEditName"/>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="lineEditHyperlink"/>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLineEdit" name="lineEditDescription"/>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>
@@ -28,7 +59,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>1259</width>
      <height>22</height>
     </rect>
    </property>
@@ -44,16 +75,12 @@
     <property name="title">
      <string>Actions</string>
     </property>
-    <addaction name="actionShow_info"/>
-    <addaction name="actionAdd_category"/>
-    <addaction name="actionAdd_row"/>
-    <addaction name="separator"/>
     <addaction name="actionAdd_hyperlink"/>
-    <addaction name="actionAdd_subcategory"/>
-    <addaction name="separator"/>
-    <addaction name="actionEdit_row"/>
+    <addaction name="actionAdd_category"/>
     <addaction name="separator"/>
     <addaction name="actionDelete_row"/>
+    <addaction name="separator"/>
+    <addaction name="actionAdd_top_level_category"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuActions"/>
@@ -107,6 +134,11 @@
   <action name="actionSave_list_of_hyperlinks">
    <property name="text">
     <string>Save list of hyperlinks</string>
+   </property>
+  </action>
+  <action name="actionAdd_top_level_category">
+   <property name="text">
+    <string>Add top level category</string>
    </property>
   </action>
  </widget>

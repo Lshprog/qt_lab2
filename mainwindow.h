@@ -4,9 +4,9 @@
 #include <QSortFilterProxyModel>
 #include <QMainWindow>
 #include <QFile>
-#include "hyperlinkmodel.h"
 #include "hyperlinkdelegate.h"
 #include "myfiltermodel.h"
+#include <QAbstractItemModel>
 
 
 QT_BEGIN_NAMESPACE
@@ -28,30 +28,38 @@ private slots:
 
     void on_treeView_clicked(const QModelIndex &index);
 
-    void on_actionAdd_row_triggered();
+    //void on_actionAdd_row_triggered();
 
     void on_actionAdd_category_triggered();
 
     void on_actionAdd_hyperlink_triggered();
 
-    void on_actionAdd_subcategory_triggered();
+    //void on_actionAdd_subcategory_triggered();
 
-    void addInfoFromDialog(int endrow,const QModelIndex &index,Hyperlink *parent, bool status);
+    //void addInfoFromDialog(const QModelIndex &index,Hyperlink *parent, bool status);
 
-    void on_actionEdit_row_triggered();
+    //void on_actionEdit_row_triggered();
 
     void on_actionDelete_row_triggered();
 
     void on_actionSave_list_of_hyperlinks_triggered();
 
-    void on_lineEdit_textChanged(const QString &arg1);
+    void on_actionAdd_top_level_category_triggered();
+
+    void on_lineEditName_textChanged(const QString &arg1);
+
+    void on_lineEditHyperlink_textChanged(const QString &arg1);
+
+    void on_lineEditDescription_textChanged(const QString &arg1);
+
+    void on_actionSave_file_triggered();
 
 private:
     //void readFile();
     //Hyperlink *rootHyperlink;
     //QStringList getInfo(QString lineString);
     Ui::MainWindow *ui;
-    HyperlinkModel *mymodel;
+    //HyperlinkModel *mymodel;
     MyFilterModel *newproxymodel;
     //QSortFilterProxyModel *newproxymodel;
     //HyperlinkModel *mymodel;

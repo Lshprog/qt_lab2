@@ -28,13 +28,15 @@ public:
     void insertCategory(Hyperlink* child);
 
     int columnCount() const;
-    bool insertChild(int position, Hyperlink* child);
+    bool insertChildren(int position,int count, int columns);
     bool removeChildren(int position, int count);
     int childNumber() const;
 
-    bool writeListOfLinks(QList<QString> *list);
+    void writeListOfLinks(QList<QString> *list);
+    void listInfo(QList<QString> *list,int tabcounter);
 
     void showInfo();
+    bool insertChild(int position, Hyperlink *child);
 
 
 
