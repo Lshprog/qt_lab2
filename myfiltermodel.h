@@ -19,6 +19,7 @@ public:
     bool checkCategoryStatus(const QModelIndex &index);
     bool setData(const QModelIndex &index, const QVariant &value, int role);
     bool makeFileInfo(QList<QString> *list);
+    void readFile(QString filename,int mode);
 
 private:
     bool hasToBeDisplayed(const QModelIndex index) const;

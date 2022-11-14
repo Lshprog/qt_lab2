@@ -23,7 +23,7 @@ bool MyFilterModel::addHyperlink(const QModelIndex &index)
 
     //Hyperlink* parent = mymodel->getHyperlinkFromIndex(modelindex);
 
-    mymodel->addInfoFromDialog(modelindex,mymodel->getHyperlinkFromIndex(modelindex),false);
+    mymodel->addInfoFromDialog(modelindex,mymodel->getHyperlinkFromIndex(modelindex));
 
     return true;
 
@@ -38,7 +38,7 @@ bool MyFilterModel::addCategory(const QModelIndex &index)
 {
     QModelIndex modelindex= mapToSource(index);
 
-    mymodel->addInfoFromDialog(modelindex,mymodel->getHyperlinkFromIndex(modelindex),true);
+    mymodel->addInfoFromDialogCat(modelindex,mymodel->getHyperlinkFromIndex(modelindex));
 
     return true;
 }
@@ -73,11 +73,27 @@ bool MyFilterModel::setData(const QModelIndex &index, const QVariant &value, int
         emit dataChanged(index,index,{role});
 
     return result;
-}
 
+}
 bool MyFilterModel::makeFileInfo(QList<QString> *list)
 {
     return mymodel->makeListInfo(list);
+}
+
+void MyFilterModel::readFile(QString filename,int mode)
+{
+    if(mode==0){
+        beginResetModel();
+        mymodel->readFile(filename);
+        endResetModel();
+    }
+    else if(mode == 1){
+        beginResetModel();
+        mymodel->cleanup();
+        mymodel->readFile(filename);
+        endResetModel();
+    }
+
 }
 
 bool MyFilterModel::hasToBeDisplayed(const QModelIndex index) const

@@ -54,6 +54,8 @@ private slots:
 
     void on_actionSave_file_triggered();
 
+    void on_actionOpen_file_triggered();
+
 private:
     //void readFile();
     //Hyperlink *rootHyperlink;

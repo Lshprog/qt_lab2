@@ -16,37 +16,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->treeView->setItemDelegate(hyplinkdelegate);
     ui->treeView->setModel(newproxymodel);
-    //newproxymodel->setSourceModel(mymodel);
-    //ui->treeView->setModel(newproxymodel);
-    //ui->treeView->
-    //connect(ui->lineEdit, SIGNAL(textChanged(QString)),newproxymodel, SLOT(setFilterRegExp(QString)));
-
-    //ui->treeView->setItemDelegate(hyplinkdelegate);
-
-
-    //MyFilterModel *filterm = new MyFilterModel(ui->treeView);
-    //filterm->setSourceModel(mymodel);
-    //ui->treeView->setModel(filterm);
-    //ui->treeView->setSortingEnabled(true);
-
-
-    // Set the Root Path
-
-    // Assign the Model to the Proxy and the Proxy to the View
-    //newproxymodel->setSourceModel(mymodel);
-    //ui->treeView->setModel(newproxymodel);
-
-    // Fix the TreeView on the Root Path of the Model
-
-    //ui->treeView->setRootIndex(newproxymodel->mapFromSource(QModelIndex()));
-
-    // Set the RegExp when the user enters it
-
-
-    //ui->treeView->setModel(mymodel);
-
-    //ui->treeView->selectionModel()->selectedIndexes();
-
+    QFont font  = QFont("Times New Roman",12);
+    ui->treeView->setFont(font);
 
 }
 
@@ -58,7 +29,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_actionRead_file_triggered()
 {
+    QString filename= QFileDialog::getOpenFileName(this,"Open file: ");
 
+    newproxymodel->readFile(filename,0);
 }
 
 
@@ -67,7 +40,14 @@ void MainWindow::on_actionShow_info_triggered()
 
 }
 
+void MainWindow::on_actionOpen_file_triggered()
+{
 
+    QString filename= QFileDialog::getOpenFileName(this,"Open file: ");
+
+    newproxymodel->readFile(filename,1);
+
+}
 
 
 
@@ -292,4 +272,3 @@ void MainWindow::on_actionSave_file_triggered()
 
         file.close();
 }
-

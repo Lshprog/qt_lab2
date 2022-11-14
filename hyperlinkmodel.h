@@ -5,6 +5,7 @@
 #include "hyperlink.h"
 #include <QFile>
 #include "dialog.h"
+#include "dialogcat.h"
 
 class HyperlinkModel : public QAbstractItemModel
 {
@@ -37,9 +38,12 @@ public:
     Hyperlink *getHyperlinkFromIndex(const QModelIndex &index) const;
     bool insertRows(int row, int count, const QModelIndex &parent) override;
     void makelisthypelinks(QList<QString> *list);
-    void addInfoFromDialog(const QModelIndex &index,Hyperlink *parent, bool status);
+    void addInfoFromDialog(const QModelIndex &index,Hyperlink *parent);
+    void addInfoFromDialogCat(const QModelIndex &index,Hyperlink *parent);
     bool makeListInfo(QList<QString> *list);
     bool insertnewrowchild(int row, const QModelIndex &parent, Hyperlink *link);
+    int readFile(QString filename);
+    void cleanup();
 
     Hyperlink* returnroot() const;
 
@@ -47,7 +51,7 @@ public:
 private:
     //void showInfo();
     //bool hasToBeDisplayed(const QModelIndex index) const;
-    void readFile();
+
     QVector<QVariant> getInfo(QString lineString);
     Hyperlink *rootHyperlink;
 

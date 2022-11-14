@@ -21,16 +21,7 @@ void HyperlinkDelegate::paint(QPainter *painter,
                           const QModelIndex &index) const
 {
    QStyleOptionViewItem opt = option;
-   //initStyleOption(&opt, index);
-//   Hyperlink *cur = static_cast<Hyperlink*>(index.internalPointer());
-//   if(index.column()==0 && cur->getCategoryStatus())
-//       opt.font.setBold(true);
-//   else if(index.column() == 1){
-//       opt.font.setUnderline(true);
-//   }
-
    QStyledItemDelegate::paint(painter, opt, index);
-
 }
 
 

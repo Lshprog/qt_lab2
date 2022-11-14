@@ -11,6 +11,7 @@ CONFIG += c++17
 SOURCES += \
     clickablelabel.cpp \
     dialog.cpp \
+    dialogcat.cpp \
     hyperlink.cpp \
     hyperlinkdelegate.cpp \
     hyperlinkmodel.cpp \
@@ -21,6 +22,7 @@ SOURCES += \
 HEADERS += \
     clickablelabel.h \
     dialog.h \
+    dialogcat.h \
     hyperlink.h \
     hyperlinkdelegate.h \
     hyperlinkmodel.h \
@@ -29,6 +31,7 @@ HEADERS += \
 
 FORMS += \
     dialog.ui \
+    dialogcat.ui \
     mainwindow.ui
 
 # Default rules for deployment.
