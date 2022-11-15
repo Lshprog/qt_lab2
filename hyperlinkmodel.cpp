@@ -1,12 +1,13 @@
 #include "hyperlinkmodel.h"
 #include <QFont>
 #include <QColor>
-
+#include <QMessageBox>
 
 HyperlinkModel::HyperlinkModel(QObject *parent)
     : QAbstractItemModel{parent}
 {
      QVector<QVariant> rootData;
+     setFilterStatus(false);
      rootData<<"Name"<<"Hyperlink"<<"Description";
      rootHyperlink = new Hyperlink(rootData);
      readFile("filename");
@@ -220,14 +221,12 @@ bool HyperlinkModel::removeRows(int row, int count, const QModelIndex &parent)
 
 //}
 
-int HyperlinkModel::readFile(QString filename)
+bool HyperlinkModel::readFile(QString filename)
 {
     //QString filename = "C:/Users/onisa/source/repos/qt_project_2/qt-lab2-lastversion/data/familytree1.txt";;
     //QString filename = "/Users/oleksiionishchenko/Documents/qtprojects/qt_lab2/data/familytree1.txt";
     qDebug()<<filename;
     QFile inputFile(filename);
-
-    int calc = 0;
 
     if(inputFile.open(QIODevice::ReadOnly)){
         int lastIndentation = 0;
@@ -239,18 +238,34 @@ int HyperlinkModel::readFile(QString filename)
 
         while(!in.atEnd()){
             QString line = in.readLine();
-            calc++;
-
             int currentIndentation = line.count("\t");
 
             qDebug()<<currentIndentation;
+            QPair<QVector<QVariant>,bool> pair = getInfo(line);
 
-            QVector<QVariant> infoList = getInfo(line);
+            QVector<QVariant> infoList = pair.first;
+            bool temp_status = pair.second;
 
             int diffIndent = currentIndentation - lastIndentation;
 
+            qDebug()<<diffIndent;
+
+            if(infoList.size()<1 || infoList.size()>4 || (diffIndent>1 && lastParent==rootHyperlink)){
+                cleanup();
+                QMessageBox msgBox;
+                msgBox.setWindowTitle("ERROR!");
+                msgBox.setText("Cant read this file!!!");
+                //msgBox.setInformativeText();
+                msgBox.setStandardButtons(QMessageBox::Ok);
+                msgBox.setIcon(QMessageBox::Critical);
+                int ret = msgBox.exec();
+                return false;
+                }
+
             if(diffIndent == 0){
                 Hyperlink *hyperlink = new Hyperlink(infoList,lastParent);
+                hyperlink->setCategoryStatus(temp_status);
+                int result = lastParent->checkDuplicates(hyperlink);
                 lastParent->appendChild(hyperlink);
                 lastHyperlink = hyperlink;
                 qDebug()<<hyperlink->data(0)<<"1";
@@ -264,6 +279,7 @@ int HyperlinkModel::readFile(QString filename)
 
                 lastParent = lastHyperlink;
                 Hyperlink *hyperlink = new Hyperlink(infoList,lastParent);
+                hyperlink->setCategoryStatus(temp_status);
                 qDebug()<<hyperlink->data(0)<<"2";
                 lastParent->appendChild(hyperlink);
                 lastHyperlink = hyperlink;
@@ -274,6 +290,7 @@ int HyperlinkModel::readFile(QString filename)
                     lastParent = lastParent->parentHyperlink();
 
                 Hyperlink *hyperlink = new Hyperlink(infoList,lastParent);
+                hyperlink->setCategoryStatus(temp_status);
                 qDebug()<<hyperlink->data(0)<<"3";
                 lastParent->appendChild(hyperlink);
                 lastHyperlink = hyperlink;
@@ -285,8 +302,9 @@ int HyperlinkModel::readFile(QString filename)
         }
 
         inputFile.close();
+        return true;
     }
-    return calc;
+    return false;
 }
 
 void HyperlinkModel::cleanup()
@@ -295,6 +313,22 @@ void HyperlinkModel::cleanup()
     QVector<QVariant> rootData;
     rootData<<"Name"<<"Hyperlink"<<"Description";
     rootHyperlink = new Hyperlink(rootData);
+}
+
+void HyperlinkModel::addTopLevelCategory()
+{
+    //rootHyperlink->appendChild();
+    addInfoFromDialogCat(QModelIndex(),rootHyperlink);
+}
+
+bool HyperlinkModel::getFilterStatus()
+{
+    return filterStatus;
+}
+
+void HyperlinkModel::setFilterStatus(bool status)
+{
+    filterStatus = status;
 }
 
 Hyperlink *HyperlinkModel::getHyperlinkFromIndex(const QModelIndex &index) const
@@ -314,7 +348,7 @@ void HyperlinkModel::makelisthypelinks(QList<QString> *list)
 
 }
 
-void HyperlinkModel::addInfoFromDialog(const QModelIndex &index, Hyperlink *parent)
+QModelIndex HyperlinkModel::addInfoFromDialog(const QModelIndex &index, Hyperlink *parent)
 {
     QVector<QVariant> data;
 
@@ -323,17 +357,26 @@ void HyperlinkModel::addInfoFromDialog(const QModelIndex &index, Hyperlink *pare
     win.show();
 
     if(!win.exec())
-        return;
+        return QModelIndex();
 
     data<<win.returnName()<<win.returnLink()<<win.returnDescription();
 
-    Hyperlink* new_hyperlink = new Hyperlink(data,parent);
+    Hyperlink* new_hyperlink = new Hyperlink(data,parent);   
     new_hyperlink->setCategoryStatus(false);
 
-    insertnewrowchild(parent->getChildrenSize(),index,new_hyperlink);
+    int result = parent->checkDuplicates(new_hyperlink);
+
+    if(result==-1){
+        insertnewrowchild(parent->getChildrenSize(),index,new_hyperlink);
+        return QModelIndex();
+    }
+
+    QModelIndex cur = this->index(result,0,index);
+    return cur;
+
 }
 
-void HyperlinkModel::addInfoFromDialogCat(const QModelIndex &index, Hyperlink *parent)
+QModelIndex HyperlinkModel::addInfoFromDialogCat(const QModelIndex &index, Hyperlink *parent)
 {
     QVector<QVariant> data;
 
@@ -342,14 +385,22 @@ void HyperlinkModel::addInfoFromDialogCat(const QModelIndex &index, Hyperlink *p
     win.show();
 
     if(!win.exec())
-        return;
+        return QModelIndex();
 
     data<<win.returnName()<<""<<win.returnDescription();
 
     Hyperlink* new_hyperlink = new Hyperlink(data,parent);
     new_hyperlink->setCategoryStatus(true);
 
-    insertnewrowchild(0,index,new_hyperlink);
+    int result = parent->checkDuplicates(new_hyperlink);
+
+    if(result==-1){
+        insertnewrowchild(0,index,new_hyperlink);
+        return QModelIndex();
+    }
+    QModelIndex cur = this->index(result,0,index);
+    return cur;
+
 
 }
 
@@ -359,10 +410,6 @@ bool HyperlinkModel::insertnewrowchild(int row, const QModelIndex &parent, Hyper
 {
     Hyperlink *hyperlinkParent = getHyperlinkFromIndex(parent);
     bool success;
-
-//    while((hyperlinkParent->getCategoryStatusOfChild(row)) && (row<hyperlinkParent->getChildrenSize())){
-//        row++;
-//    }
 
     beginInsertRows(parent,row,row);
     success = hyperlinkParent->insertChild(row,link);
@@ -377,16 +424,25 @@ Hyperlink *HyperlinkModel::returnroot() const
 }
 
 
-QVector<QVariant> HyperlinkModel::getInfo(QString lineString)
+QPair<QVector<QVariant>,bool> HyperlinkModel::getInfo(QString lineString)
 {
     QString cleanedUpStr = lineString.trimmed();
     QStringList split = cleanedUpStr.split("::");
 
     QVector<QVariant> data;
-    for(int i =0; i<split.size();i++)
+    int i = 0;
+    for(i; i<split.size()-1;i++)
         data << split[i];
+    bool status;
+    if(split[i]=="true")
+        status = true;
+    else
+        status = false;
 
-    return data;
+    QPair<QVector<QVariant>,bool> pair;
+    pair.first = data;
+    pair.second = status;
+    return pair;
 }
 
 bool HyperlinkModel::makeListInfo(QList<QString> *list)

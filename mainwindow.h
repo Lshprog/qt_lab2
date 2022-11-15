@@ -56,6 +56,8 @@ private slots:
 
     void on_actionOpen_file_triggered();
 
+    void on_checkBox_stateChanged(int arg1);
+
 private:
     //void readFile();
     //Hyperlink *rootHyperlink;

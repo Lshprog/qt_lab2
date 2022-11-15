@@ -12,17 +12,21 @@ public:
 
     explicit MyFilterModel(QObject *parent = nullptr);
     virtual bool filterAcceptsRow(int source_row, const QModelIndex & source_parent) const override;
-    bool addHyperlink(const QModelIndex &index);
+    QModelIndex addHyperlink(const QModelIndex &index);
     void makelisthypelinks(QList<QString> *list);
-    bool addCategory(const QModelIndex &index);
+    QModelIndex addCategory(const QModelIndex &index);
     bool editData(const QModelIndex &index);
-    bool checkCategoryStatus(const QModelIndex &index);
+    bool checkCategoryStatus(const QModelIndex &index); 
     bool setData(const QModelIndex &index, const QVariant &value, int role);
     bool makeFileInfo(QList<QString> *list);
-    void readFile(QString filename,int mode);
+    bool readFile(QString filename,int mode);
+    void addTopLevelCategory();
+    void setFilterStatus(bool status);
 
 private:
+
     bool hasToBeDisplayed(const QModelIndex index) const;
+    bool hasToBeDisplayedCat(const QModelIndex index) const;
     HyperlinkModel* mymodel;
 
 

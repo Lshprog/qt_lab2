@@ -4,6 +4,7 @@
 #include <QAbstractItemModel>
 #include "hyperlink.h"
 #include <QFile>
+#include <QPair>
 #include "dialog.h"
 #include "dialogcat.h"
 
@@ -38,12 +39,16 @@ public:
     Hyperlink *getHyperlinkFromIndex(const QModelIndex &index) const;
     bool insertRows(int row, int count, const QModelIndex &parent) override;
     void makelisthypelinks(QList<QString> *list);
-    void addInfoFromDialog(const QModelIndex &index,Hyperlink *parent);
-    void addInfoFromDialogCat(const QModelIndex &index,Hyperlink *parent);
+    QModelIndex addInfoFromDialog(const QModelIndex &index,Hyperlink *parent);
+    QModelIndex addInfoFromDialogCat(const QModelIndex &index,Hyperlink *parent);
     bool makeListInfo(QList<QString> *list);
     bool insertnewrowchild(int row, const QModelIndex &parent, Hyperlink *link);
-    int readFile(QString filename);
+    bool readFile(QString filename);
     void cleanup();
+    void addTopLevelCategory();
+
+    bool getFilterStatus();
+    void setFilterStatus(bool status);
 
     Hyperlink* returnroot() const;
 
@@ -51,8 +56,8 @@ public:
 private:
     //void showInfo();
     //bool hasToBeDisplayed(const QModelIndex index) const;
-
-    QVector<QVariant> getInfo(QString lineString);
+    bool filterStatus;
+    QPair<QVector<QVariant>,bool>  getInfo(QString lineString);
     Hyperlink *rootHyperlink;
 
 

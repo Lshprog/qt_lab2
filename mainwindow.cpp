@@ -3,7 +3,7 @@
 #include <QTextStream>
 #include "dialog.h"
 #include <QFileDialog>
-
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -18,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->treeView->setModel(newproxymodel);
     QFont font  = QFont("Times New Roman",12);
     ui->treeView->setFont(font);
-
+    ui->actionAdd_hyperlink->setDisabled(true);
 }
 
 MainWindow::~MainWindow()
@@ -32,6 +32,7 @@ void MainWindow::on_actionRead_file_triggered()
     QString filename= QFileDialog::getOpenFileName(this,"Open file: ");
 
     newproxymodel->readFile(filename,0);
+
 }
 
 
@@ -42,7 +43,6 @@ void MainWindow::on_actionShow_info_triggered()
 
 void MainWindow::on_actionOpen_file_triggered()
 {
-
     QString filename= QFileDialog::getOpenFileName(this,"Open file: ");
 
     newproxymodel->readFile(filename,1);
@@ -54,37 +54,39 @@ void MainWindow::on_actionOpen_file_triggered()
 
 void MainWindow::on_treeView_clicked(const QModelIndex &index)
 {
-    ui->actionAdd_category->setDisabled(false);
-    ui->actionAdd_hyperlink->setDisabled(false);
-
-    bool status = newproxymodel->checkCategoryStatus(index);
-
-    if(status == false){
-        ui->actionAdd_category->setDisabled(true);
+    if(ui->treeView->selectionModel()->currentIndex()==QModelIndex())
         ui->actionAdd_hyperlink->setDisabled(true);
-    }
+    else{
+        ui->actionAdd_category->setDisabled(false);
+        ui->actionAdd_hyperlink->setDisabled(false);
+
+        bool status = newproxymodel->checkCategoryStatus(index);
+
+        if(status == false){
+            ui->actionAdd_category->setDisabled(true);
+            ui->actionAdd_hyperlink->setDisabled(true);
+        }
+
 }
-
-
-//void MainWindow::on_actionAdd_row_triggered()
-//{
-//    QModelIndex index = ui->treeView->selectionModel()->currentIndex();
-
-//    Hyperlink *childeee = static_cast<Hyperlink*>(index.internalPointer());
-//    Hyperlink *parentte = childeee->parentHyperlink();
-//    int endrow = parentte->getChildrenSize();
-
-
-//    addInfoFromDialog(index.parent(),parentte,false);
-
-//}
+}
 
 
 void MainWindow::on_actionAdd_category_triggered()
 {
     QModelIndex index = ui->treeView->selectionModel()->currentIndex();
 
-    newproxymodel->addCategory(index);
+    QModelIndex result = newproxymodel->addCategory(index);
+
+    if(result!=QModelIndex()){
+      ui->treeView->selectionModel()->setCurrentIndex(result,QItemSelectionModel::Select);
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Warning");
+        msgBox.setText("Duplicate!");
+        //msgBox.setInformativeText();
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.setIcon(QMessageBox::Warning);
+        int ret = msgBox.exec();
+    }
 }
 
 
@@ -94,85 +96,21 @@ void MainWindow::on_actionAdd_category_triggered()
 void MainWindow::on_actionAdd_hyperlink_triggered()
 {
     QModelIndex index = ui->treeView->selectionModel()->currentIndex();
-//    Hyperlink *parentte = static_cast<Hyperlink*>(index.internalPointer());
-//    //parentte->showInfo();
-//    //Hyperlink *parentte = childeee->parentHyperlink();
-//    int endrow = parentte->getChildrenSize();
 
-//    addInfoFromDialog(endrow,index,parentte,false);
+    QModelIndex result = newproxymodel->addHyperlink(index);
 
-    newproxymodel->addHyperlink(index);
+    if(result!=QModelIndex()){
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Warning");
+        msgBox.setText("Duplicate!");
+        //msgBox.setInformativeText();
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.setIcon(QMessageBox::Warning);
+        int ret = msgBox.exec();
+        ui->treeView->selectionModel()->setCurrentIndex(result,QItemSelectionModel::Select);
+    }
 
 }
-
-
-
-//void MainWindow::on_actionAdd_subcategory_triggered()
-//{
-//    QModelIndex index = ui->treeView->selectionModel()->currentIndex();
-//    int endrow = 0;
-//    if(index!=QModelIndex()){
-//        Hyperlink *parentte = static_cast<Hyperlink*>(index.internalPointer());
-//        //parentte->showInfo();
-//        //Hyperlink *parentte = childeee->parentHyperlink();
-
-
-//        addInfoFromDialog(endrow,index,parentte,true);
-//    }
-//    else{
-//        addInfoFromDialog(endrow,index,mymodel->returnroot(),true);
-//    }
-//}
-
-//void MainWindow::addInfoFromDialog(const QModelIndex &index, Hyperlink *parent,bool status)
-//{
-//    QVector<QVariant> data;
-
-//    Dialog win(this);
-
-//    win.show();
-
-//    if(!win.exec())
-//        return;
-
-//    data<<win.returnName()<<win.returnLink()<<win.returnDescription();
-
-//    Hyperlink* new_hyperlink = new Hyperlink(data,parent);
-//    new_hyperlink->setCategoryStatus(status);
-
-//    //mymodel->insertnewrowchild(endrow,index.parent(),new_hyperlink);
-//    mymodel->insertnewrowchild(endrow,index,new_hyperlink);
-//}
-
-
-//void MainWindow::on_actionEdit_row_triggered()
-//{
-//    QModelIndex index = ui->treeView->selectionModel()->currentIndex();
-//    Hyperlink *currenthyp = mymodel->getHyperlinkFromIndex(index);
-
-
-
-//    Dialog win(this);
-
-//    win.show();
-
-//    win.setName(currenthyp->data(0).toString());
-//    win.setLink(currenthyp->data(1).toString());
-//    win.setDescription(currenthyp->data(2).toString());
-
-
-//    if(!win.exec())
-//        return;
-
-//    QVector<QVariant> data;
-
-//    data<<win.returnName()<<win.returnLink()<<win.returnDescription();
-
-//    for(int i=0;i<3;i++){
-//        mymodel->setData(mymodel->index(currenthyp->row(),i,index.parent()),data[i],Qt::EditRole);
-//    }
-
-//}
 
 
 void MainWindow::on_actionDelete_row_triggered()
@@ -181,7 +119,7 @@ void MainWindow::on_actionDelete_row_triggered()
     QModelIndex index = ui->treeView->selectionModel()->currentIndex();
 
     newproxymodel->removeRows(index.row(),1,index.parent());
-    //mymodel->removeRows(index.row(),1,index.parent());
+
 
 }
 
@@ -217,6 +155,18 @@ void MainWindow::on_actionSave_list_of_hyperlinks_triggered()
 void MainWindow::on_actionAdd_top_level_category_triggered()
 {
 
+    QModelIndex result = newproxymodel->addCategory(QModelIndex());
+
+    if(result!=QModelIndex()){
+        ui->treeView->selectionModel()->setCurrentIndex(result,QItemSelectionModel::Select);
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Warning");
+        msgBox.setText("Duplicate!");
+        //msgBox.setInformativeText();
+        msgBox.setStandardButtons(QMessageBox::Ok);
+        msgBox.setIcon(QMessageBox::Warning);
+        int ret = msgBox.exec();
+    }
 }
 
 
@@ -249,6 +199,7 @@ void MainWindow::on_lineEditDescription_textChanged(const QString &arg1)
 
 void MainWindow::on_actionSave_file_triggered()
 {
+
     QString filename= QFileDialog::getSaveFileName(this, "Save As");
 
         if (filename.isEmpty())
@@ -272,3 +223,19 @@ void MainWindow::on_actionSave_file_triggered()
 
         file.close();
 }
+
+void MainWindow::on_checkBox_stateChanged(int arg1)
+{
+    qDebug()<<arg1;
+    if(arg1 == 2){
+        ui->lineEditHyperlink->setEnabled(false);
+        ui->label_5->setEnabled(false);
+        newproxymodel->setFilterStatus(true);
+    }
+    else{
+        ui->lineEditHyperlink->setEnabled(true);
+        ui->label_5->setEnabled(true);
+        newproxymodel->setFilterStatus(false);
+    }
+}
+

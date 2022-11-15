@@ -38,6 +38,8 @@ public:
     void showInfo();
     bool insertChild(int position, Hyperlink *child);
 
+    int checkDuplicates(Hyperlink *data);
+
 
 
 private:

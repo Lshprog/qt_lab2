@@ -26,6 +26,7 @@ void Hyperlink::appendChild(Hyperlink *child)
 //            return;
 //        }
 //    }
+
     if(child->getCategoryStatus())
         this->children.insert(this->children.begin(),child);
     else
@@ -129,6 +130,18 @@ bool Hyperlink::insertChild(int position, Hyperlink* child)
     return true;
 }
 
+int Hyperlink::checkDuplicates(Hyperlink *data)
+{
+    for(auto child:this->children){
+        if((child->data(0) == data->data(0)&&(!child->data(0).toString().isEmpty()))
+                ||(child->data(1) == data->data(1)&&(!child->data(1).toString().isEmpty())))
+        {
+            return child->row();
+        }
+    }
+    return -1;
+}
+
 bool Hyperlink::removeChildren(int position, int count)
 {
     if(position < 0||position>children.size())
@@ -171,6 +184,10 @@ void Hyperlink::listInfo(QList<QString> *list,int tabcounter)
         for(int i=0;i<tabcounter;i++)
             cur=cur+"\t";
         cur =cur+ this->data(0).toString()+"::"+this->data(1).toString()+"::"+this->data(2).toString();
+        if(this->getCategoryStatus())
+            cur = cur +"::true";
+        else
+            cur = cur + "::false";
         list->append(cur);
         foreach(Hyperlink *child,this->children)
         {
@@ -189,6 +206,10 @@ void Hyperlink::listInfo(QList<QString> *list,int tabcounter)
         for(int i=0;i<tabcounter;i++)
             cur=cur+"\t";
         cur =cur+ this->data(0).toString()+"::"+this->data(1).toString()+"::"+this->data(2).toString();
+        if(this->getCategoryStatus())
+            cur = cur +"::true";
+        else
+            cur = cur + "::false";
         list->append(cur);
     }
 }
