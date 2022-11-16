@@ -430,19 +430,21 @@ QPair<QVector<QVariant>,bool> HyperlinkModel::getInfo(QString lineString)
 {
     QString cleanedUpStr = lineString.trimmed();
     QStringList split = cleanedUpStr.split("::");
-
+    qDebug()<<"Splitsize: "<<split.size();
     QVector<QVariant> data;
     int i = 0;
-    for(i; i<split.size();i++)
-        data << split[i];
     bool status = false;
-    if(split.size()==4){
-        if(split[i]=="true")
-            status = true;
-        else
-            status = false;
+    for(i; i<split.size();i++){
+        if(i==3){
+            if(split[i]=="true")
+                status = true;
+            else
+                status = false;
+        }
+       else{
+            data << split[i];
+        }
     }
-
     QPair<QVector<QVariant>,bool> pair;
     pair.first = data;
     pair.second = status;
