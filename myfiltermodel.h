@@ -22,6 +22,8 @@ public:
     bool readFile(QString filename,int mode);
     void addTopLevelCategory();
     void setFilterStatus(bool status);
+    bool checkTopLevelChildren();
+    bool checkIndexValue(const QModelIndex index) const;
 
 private:
 

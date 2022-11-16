@@ -265,6 +265,8 @@ bool HyperlinkModel::readFile(QString filename)
             if(diffIndent == 0){
                 Hyperlink *hyperlink = new Hyperlink(infoList,lastParent);
                 hyperlink->setCategoryStatus(temp_status);
+                if(lastParent==rootHyperlink)
+                    hyperlink->setCategoryStatus(true);
                 int result = lastParent->checkDuplicates(hyperlink);
                 lastParent->appendChild(hyperlink);
                 lastHyperlink = hyperlink;
@@ -431,17 +433,20 @@ QPair<QVector<QVariant>,bool> HyperlinkModel::getInfo(QString lineString)
 
     QVector<QVariant> data;
     int i = 0;
-    for(i; i<split.size()-1;i++)
+    for(i; i<split.size();i++)
         data << split[i];
-    bool status;
-    if(split[i]=="true")
-        status = true;
-    else
-        status = false;
+    bool status = false;
+    if(split.size()==4){
+        if(split[i]=="true")
+            status = true;
+        else
+            status = false;
+    }
 
     QPair<QVector<QVariant>,bool> pair;
     pair.first = data;
     pair.second = status;
+    qDebug()<<data;
     return pair;
 }
 

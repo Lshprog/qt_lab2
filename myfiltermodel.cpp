@@ -1,4 +1,5 @@
 #include "myfiltermodel.h"
+#include <QQueue>
 
 MyFilterModel::MyFilterModel(QObject *parent)
     : QSortFilterProxyModel{parent}
@@ -113,6 +114,14 @@ void MyFilterModel::setFilterStatus(bool status)
     mymodel->setFilterStatus(status);
 }
 
+bool MyFilterModel::checkTopLevelChildren()
+{
+    Hyperlink *root = mymodel->returnroot();
+    if(root->getChildrenSize()>0)
+        return true;
+    return false;
+}
+
 bool MyFilterModel::hasToBeDisplayed(const QModelIndex index) const
 {
 
@@ -135,27 +144,7 @@ bool MyFilterModel::hasToBeDisplayed(const QModelIndex index) const
     }
     else
     {
-
-        QList<QModelIndex> list1;
-        list1<<sourceModel()->index(index.row(), 0, index.parent())<<sourceModel()->index(index.row(), 1, index.parent())
-            <<sourceModel()->index(index.row(), 2, index.parent());
-        QList<QString> type1;
-        type1<<sourceModel()->data(list1[0],Qt::DisplayRole).toString()<<sourceModel()->data(list1[1], Qt::DisplayRole).toString()
-                <<sourceModel()->data(list1[2], Qt::DisplayRole).toString();
-
-        //QRegularExpression re;
-        QRegularExpression re;
-
-        for(int i = 0;i<3;i++){
-            re.setPattern(datalist[i]);
-            //qDebug()<<re;
-            if(!type1[i].contains(re)){
-
-                return false;
-            }
-
-        }
-        return true;
+        return checkIndexValue(index);
 
     }
     return result;
@@ -163,49 +152,46 @@ bool MyFilterModel::hasToBeDisplayed(const QModelIndex index) const
 }
 bool MyFilterModel::hasToBeDisplayedCat(const QModelIndex index) const
 {
+    bool result = checkIndexValue(index);
 
-//    bool result = true;
-//        // How many child this element have
+    if(!result){
+
+        QQueue<QModelIndex> queue;
+        queue.enqueue(index);
+        while(!queue.isEmpty()){
+            QModelIndex cur_index = queue.dequeue();
+
+            if(sourceModel()->rowCount(cur_index)>0){
+                for(int i =0;i<this->sourceModel()->rowCount(cur_index);i++){
+                    Hyperlink *cur_hyp = mymodel->getHyperlinkFromIndex(sourceModel()->index(i,0,cur_index));
+                    if(cur_hyp->getCategoryStatus())
+                        result = checkIndexValue(sourceModel()->index(i,0,cur_index));
+                    if(result){
+                        return result;
+                    }
+
+                    queue.enqueue(sourceModel()->index(i,0,cur_index));
+                }
+            }
+
+        }
+
+        QModelIndex cur_parent = index;
+        while(cur_parent!=QModelIndex()){
+            cur_parent = cur_parent.parent();
+            result = checkIndexValue(cur_parent);
+            if(result)
+               return result;
+
+        }
+
+    }
+    return result;
+}
 
 
-//    QList<QModelIndex> list1;
-//    list1<<sourceModel()->index(index.row(), 0, index.parent())<<sourceModel()->index(index.row(), 1, index.parent())
-//        <<sourceModel()->index(index.row(), 2, index.parent());
-//    QList<QString> type1;
-//    type1<<sourceModel()->data(list1[0],Qt::DisplayRole).toString()<<sourceModel()->data(list1[1], Qt::DisplayRole).toString()
-//            <<sourceModel()->data(list1[2], Qt::DisplayRole).toString();
-
-//    //QRegularExpression re;
-//    QRegularExpression re;
-
-//    for(int i = 0;i<3;i++){
-//        re.setPattern(datalist[i]);
-//        //qDebug()<<re;
-//        if(!type1[i].contains(re)){
-//            if(sourceModel()->rowCount(index)>0){
-//                for( int ii = 0; ii < sourceModel()->rowCount(index); ii++)
-//                {
-//                    QModelIndex childIndex = sourceModel()->index(ii,0,index);
-//                    if ( ! childIndex.isValid() )
-//                        break;
-//                    result = hasToBeDisplayed(childIndex);
-//                    if (result)
-//                    {
-//                        // there is atless one element to display
-//                        break;
-//                    }
-//                }
-
-//                return result;
-//            }
-//        }
-//    }
-
-//    return result;
-
-        //bool result = true;
-            // How many child this element have
-
+bool MyFilterModel::checkIndexValue(const QModelIndex index) const
+{
     bool result = true;
 
     QList<QModelIndex> list1;
@@ -215,25 +201,15 @@ bool MyFilterModel::hasToBeDisplayedCat(const QModelIndex index) const
     type1<<sourceModel()->data(list1[0],Qt::DisplayRole).toString()<<sourceModel()->data(list1[1], Qt::DisplayRole).toString()
             <<sourceModel()->data(list1[2], Qt::DisplayRole).toString();
 
-    //QRegularExpression re;
     QRegularExpression re;
-
-    for(int i = 0;i<3;i++){
+    for(int i=0;i<3;i++){
         re.setPattern(datalist[i]);
-        //qDebug()<<re;
         if(!type1[i].contains(re)){
             result = false;
-            if (sourceModel()->parent(index).isValid())
-            {
-                result = hasToBeDisplayedCat(index.parent());
-            }
-            return result;
+            break;
         }
-
     }
+
     return result;
 
-
-
 }
-

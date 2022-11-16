@@ -120,6 +120,10 @@ void MainWindow::on_actionDelete_row_triggered()
 
     newproxymodel->removeRows(index.row(),1,index.parent());
 
+    if(newproxymodel->checkTopLevelChildren())
+        ui->actionAdd_hyperlink->setEnabled(true);
+    ui->actionAdd_hyperlink->setEnabled(false);
+
 
 }
 
