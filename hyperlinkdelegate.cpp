@@ -30,18 +30,20 @@ bool HyperlinkDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
     if(index.column() == 1 && event->type() == QEvent::MouseButtonPress){
         QMouseEvent *keyEvent = static_cast<QMouseEvent *>(event);
         if(keyEvent->button() == Qt::RightButton){
-            QUrl url = QUrl::fromUserInput(index.data().toString());
-            bool result = QDesktopServices::openUrl(url);
-            if(result)
-                return true;
-            else{
-                QMessageBox msgBox;
-                msgBox.setText("Warning!");
-                msgBox.setInformativeText("Incorrect link!");
-                msgBox.setStandardButtons(QMessageBox::Ok);
-                msgBox.setIcon(QMessageBox::Warning);
-                int ret = msgBox.exec();
-                return false;
+            if(!index.data().toString().isEmpty()){
+                QUrl url = QUrl::fromUserInput(index.data().toString());
+                bool result = QDesktopServices::openUrl(url);
+                if(result)
+                    return true;
+                else{
+                    QMessageBox msgBox;
+                    msgBox.setText("Warning!");
+                    msgBox.setInformativeText("Incorrect link!");
+                    msgBox.setStandardButtons(QMessageBox::Ok);
+                    msgBox.setIcon(QMessageBox::Warning);
+                    int ret = msgBox.exec();
+                    return false;
+                }
             }
         }
 

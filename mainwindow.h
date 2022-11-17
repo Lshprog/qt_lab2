@@ -24,7 +24,7 @@ public:
 private slots:
     void on_actionRead_file_triggered();
 
-    void on_actionShow_info_triggered();
+    //void on_actionShow_info_triggered();
 
     void on_treeView_clicked(const QModelIndex &index);
 
@@ -58,6 +58,8 @@ private slots:
 
     void on_checkBox_stateChanged(int arg1);
 
+
+
 private:
     //void readFile();
     //Hyperlink *rootHyperlink;
@@ -68,5 +70,9 @@ private:
     //QSortFilterProxyModel *newproxymodel;
     //HyperlinkModel *mymodel;
 
+
+    // QWidget interface
+protected:
+    void closeEvent(QCloseEvent *event);
 };
 #endif // MAINWINDOW_H

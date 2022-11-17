@@ -17,13 +17,14 @@ public:
     QModelIndex addCategory(const QModelIndex &index);
     bool editData(const QModelIndex &index);
     bool checkCategoryStatus(const QModelIndex &index); 
-    bool setData(const QModelIndex &index, const QVariant &value, int role);
+    bool setData(const QModelIndex &index, const QVariant &value, int role)override;
     bool makeFileInfo(QList<QString> *list);
     bool readFile(QString filename,int mode);
     void addTopLevelCategory();
     void setFilterStatus(bool status);
     bool checkTopLevelChildren();
     bool checkIndexValue(const QModelIndex index) const;
+    bool saveInfoToFile(QString filename);
 
 private:
 

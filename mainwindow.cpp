@@ -4,6 +4,7 @@
 #include "dialog.h"
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QCloseEvent>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -19,6 +20,7 @@ MainWindow::MainWindow(QWidget *parent)
     QFont font  = QFont("Times New Roman",12);
     ui->treeView->setFont(font);
     ui->actionAdd_hyperlink->setDisabled(true);
+
 }
 
 MainWindow::~MainWindow()
@@ -31,21 +33,24 @@ void MainWindow::on_actionRead_file_triggered()
 {
     QString filename= QFileDialog::getOpenFileName(this,"Open file: ");
 
-    newproxymodel->readFile(filename,0);
+    if(!filename.isEmpty()){
+        newproxymodel->saveInfoToFile("/Users/oleksiionishchenko/Documents/qtprojects/qt_lab2/data/ForDelete");
+        if(!newproxymodel->readFile(filename,0)){
+            qDebug()<<"WTF";
+            qDebug()<<newproxymodel->readFile("/Users/oleksiionishchenko/Documents/qtprojects/qt_lab2/data/ForDelete",1);
+        }
+    }
+
 
 }
 
-
-void MainWindow::on_actionShow_info_triggered()
-{
-
-}
 
 void MainWindow::on_actionOpen_file_triggered()
 {
     QString filename= QFileDialog::getOpenFileName(this,"Open file: ");
 
-    newproxymodel->readFile(filename,1);
+    if(!filename.isEmpty())
+        newproxymodel->readFile(filename,1);
 
 }
 
@@ -204,7 +209,7 @@ void MainWindow::on_lineEditDescription_textChanged(const QString &arg1)
 void MainWindow::on_actionSave_file_triggered()
 {
 
-    QString filename= QFileDialog::getSaveFileName(this, "Save As");
+         QString filename= QFileDialog::getSaveFileName(this, "Save As");
 
         if (filename.isEmpty())
             return;
@@ -242,4 +247,23 @@ void MainWindow::on_checkBox_stateChanged(int arg1)
         newproxymodel->setFilterStatus(false);
     }
 }
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    QMessageBox::StandardButton resBtn = QMessageBox::question( this, "Exit",
+                                                                    tr("Do you want to save your file?\n"),
+                                                                    QMessageBox::Cancel | QMessageBox::No | QMessageBox::Yes,
+                                                                    QMessageBox::Yes);
+        if (resBtn == QMessageBox::Cancel) {
+            event->ignore();
+        } else if(resBtn == QMessageBox::Yes) {
+            on_actionSave_file_triggered();
+            event->accept();
+        }
+        else{
+            event->accept();
+        }
+}
+
+
 

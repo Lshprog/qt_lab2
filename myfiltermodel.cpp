@@ -1,5 +1,6 @@
 #include "myfiltermodel.h"
 #include <QQueue>
+#include <QFileDialog>
 
 MyFilterModel::MyFilterModel(QObject *parent)
     : QSortFilterProxyModel{parent}
@@ -212,4 +213,31 @@ bool MyFilterModel::checkIndexValue(const QModelIndex index) const
 
     return result;
 
+}
+
+bool MyFilterModel::saveInfoToFile(QString filename)
+{
+
+
+   if (filename.isEmpty())
+       filename = QFileDialog::getSaveFileName(nullptr,"Save As");
+
+   QFile file(filename);
+
+   //Open the file
+   if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+       return false;
+
+   file.resize(0);
+   QTextStream out(&file);
+
+   QList<QString> hyperlinks;
+   this->makeFileInfo(&hyperlinks);
+
+   for(int i = 0;i<hyperlinks.size();i++){
+       out<<hyperlinks[i].toUtf8()<<"\n";
+   }
+
+
+   file.close();
 }
