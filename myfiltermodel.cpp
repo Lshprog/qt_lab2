@@ -217,18 +217,14 @@ bool MyFilterModel::checkIndexValue(const QModelIndex index) const
 
 bool MyFilterModel::saveInfoToFile(QString filename)
 {
-
-
-   if (filename.isEmpty())
-       filename = QFileDialog::getSaveFileName(nullptr,"Save As");
+   qDebug()<<"CHTONAXYI"<<"\n"<<"\n";
+   QFile filecheck(filename);
+   if(filecheck.open(QIODevice::WriteOnly | QIODevice::Text))
+       filecheck.remove();
 
    QFile file(filename);
+   file.open(QIODevice::WriteOnly | QIODevice::Text);
 
-   //Open the file
-   if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-       return false;
-
-   file.resize(0);
    QTextStream out(&file);
 
    QList<QString> hyperlinks;

@@ -10,7 +10,7 @@ HyperlinkModel::HyperlinkModel(QObject *parent)
      setFilterStatus(false);
      rootData<<"Name"<<"Hyperlink"<<"Description";
      rootHyperlink = new Hyperlink(rootData);
-     readFile("filename");
+     //readFile("filename");
 }
 
 
@@ -225,6 +225,7 @@ bool HyperlinkModel::readFile(QString filename)
 {
     //QString filename = "C:/Users/onisa/source/repos/qt_project_2/qt-lab2-lastversion/data/familytree1.txt";;
     //QString filename = "/Users/oleksiionishchenko/Documents/qtprojects/qt_lab2/data/familytree1.txt";
+    beginResetModel();
     qDebug()<<filename;
     QFile inputFile(filename);
 
@@ -235,6 +236,7 @@ bool HyperlinkModel::readFile(QString filename)
         Hyperlink *lastHyperlink = 0;
 
         QTextStream in(&inputFile);
+        in.seek(0);
 
         while(!in.atEnd()){
             QString line = in.readLine();
@@ -259,9 +261,9 @@ bool HyperlinkModel::readFile(QString filename)
                 msgBox.setStandardButtons(QMessageBox::Ok);
                 msgBox.setIcon(QMessageBox::Critical);
                 int ret = msgBox.exec();
+                endResetModel();
                 return false;
                 }
-
             if(diffIndent == 0){
                 Hyperlink *hyperlink = new Hyperlink(infoList,lastParent);
                 hyperlink->setCategoryStatus(temp_status);
@@ -302,10 +304,11 @@ bool HyperlinkModel::readFile(QString filename)
             lastIndentation = currentIndentation;
 
         }
-
+        endResetModel();
         inputFile.close();
         return true;
     }
+    endResetModel();
     return false;
 }
 
@@ -397,7 +400,10 @@ QModelIndex HyperlinkModel::addInfoFromDialogCat(const QModelIndex &index, Hyper
     int result = parent->checkDuplicates(new_hyperlink);
 
     if(result==-1){
-        insertnewrowchild(0,index,new_hyperlink);
+        int k = 0;
+        while(k<parent->getChildrenSize() && parent->getCategoryStatusOfChild(k))
+            k++;
+        insertnewrowchild(k,index,new_hyperlink);
         return QModelIndex();
     }
     QModelIndex cur = this->index(result,0,index);

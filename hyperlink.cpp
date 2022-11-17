@@ -27,8 +27,12 @@ void Hyperlink::appendChild(Hyperlink *child)
 //        }
 //    }
 
-    if(child->getCategoryStatus())
-        this->children.insert(this->children.begin(),child);
+    if(child->getCategoryStatus()){
+        int i =0;
+        while(i<children.size() && children[i]->getCategoryStatus())
+            i++;
+        this->children.insert(i,child);
+    }
     else
         this->children.append(child);
 }

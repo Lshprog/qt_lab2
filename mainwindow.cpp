@@ -34,10 +34,9 @@ void MainWindow::on_actionRead_file_triggered()
     QString filename= QFileDialog::getOpenFileName(this,"Open file: ");
 
     if(!filename.isEmpty()){
-        newproxymodel->saveInfoToFile("/Users/oleksiionishchenko/Documents/qtprojects/qt_lab2/data/ForDelete");
+        newproxymodel->saveInfoToFile("C:/Users/onisa/source/repos/qt_project_2/qt-lab2-lastversion/data/ForDelete.txt");
         if(!newproxymodel->readFile(filename,0)){
-            qDebug()<<"WTF";
-            qDebug()<<newproxymodel->readFile("/Users/oleksiionishchenko/Documents/qtprojects/qt_lab2/data/ForDelete",1);
+            newproxymodel->readFile("C:/Users/onisa/source/repos/qt_project_2/qt-lab2-lastversion/data/ForDelete.txt",1);
         }
     }
 
