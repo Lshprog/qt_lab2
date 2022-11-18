@@ -6,6 +6,7 @@
 #include <QMessageBox>
 #include <QCloseEvent>
 
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -124,10 +125,25 @@ void MainWindow::on_actionDelete_row_triggered()
 
     newproxymodel->removeRows(index.row(),1,index.parent());
 
-    if(newproxymodel->checkTopLevelChildren())
+    QModelIndex index2 = ui->treeView->selectionModel()->currentIndex();
+    //newproxymodel->checkCategoryStatus(index2)
+//    if(index2.isValid()){
+//        if(newproxymodel->checkCategoryStatus(index2))
+//            ui->actionAdd_hyperlink->setEnabled(true);
+//         ui->actionAdd_hyperlink->setEnabled(false);
+//    }
+
+    if(newproxymodel->checkTopLevelChildren()){
         ui->actionAdd_hyperlink->setEnabled(true);
+    }
     ui->actionAdd_hyperlink->setEnabled(false);
 
+    if(index2!=QModelIndex()){
+        if(newproxymodel->checkCategoryStatus(index2)){
+            ui->actionAdd_hyperlink->setEnabled(true);
+            ui->actionAdd_category->setEnabled(true);
+        }
+    }
 
 }
 
@@ -150,7 +166,7 @@ void MainWindow::on_actionSave_list_of_hyperlinks_triggered()
         QList<QString> hyperlinks;
         newproxymodel->makelisthypelinks(&hyperlinks);
 
-        for(int i = 1;i<hyperlinks.size();i++){
+        for(int i = 0;i<hyperlinks.size();i++){
             out<<hyperlinks[i].toUtf8()<<"\n";
         }
 
@@ -249,19 +265,21 @@ void MainWindow::on_checkBox_stateChanged(int arg1)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    QMessageBox::StandardButton resBtn = QMessageBox::question( this, "Exit",
-                                                                    tr("Do you want to save your file?\n"),
-                                                                    QMessageBox::Cancel | QMessageBox::No | QMessageBox::Yes,
-                                                                    QMessageBox::Yes);
-        if (resBtn == QMessageBox::Cancel) {
-            event->ignore();
-        } else if(resBtn == QMessageBox::Yes) {
-            on_actionSave_file_triggered();
-            event->accept();
-        }
-        else{
-            event->accept();
-        }
+    if(newproxymodel->checkTopLevelChildren()){
+        QMessageBox::StandardButton resBtn = QMessageBox::question( this, "Exit",
+                                                                        tr("Do you want to save your file?\n"),
+                                                                        QMessageBox::Cancel | QMessageBox::No | QMessageBox::Yes,
+                                                                        QMessageBox::Yes);
+            if (resBtn == QMessageBox::Cancel) {
+                event->ignore();
+            } else if(resBtn == QMessageBox::Yes) {
+                on_actionSave_file_triggered();
+                event->accept();
+            }
+            else{
+                event->accept();
+            }
+    }
 }
 
 

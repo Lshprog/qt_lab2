@@ -26,6 +26,7 @@ public:
     bool checkIndexValue(const QModelIndex index) const;
     bool saveInfoToFile(QString filename);
 
+
 private:
 
     bool hasToBeDisplayed(const QModelIndex index) const;
