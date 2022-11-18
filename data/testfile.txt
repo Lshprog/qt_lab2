@@ -3,3 +3,5 @@ Qt::::Links::true
 		QStyledItemDelegate::https://doc.qt.io/qt-6/qstyleditemdelegate.html::The QStyledItemDelegate class provides display and editing facilities for data items from a model::false
 		QAbstractItemModel::https://doc.qt.io/qt-5/qabstractitemmodel.html::The QAbstractItemModel class provides the abstract interface for item model classes::false
 		QSortFilterProxyModel::https://doc.qt.io/qt-6/qsortfilterproxymodel.html::The QSortFilterProxyModel class provides support for sorting and filtering data passed between another model and a view::false
+Google Drive Links::::::true
+	Labs OOP::https://drive.google.com/drive/folders/1YefDUIaPujKSl4ZWLrZpTW9TI1VbDhRY::::false

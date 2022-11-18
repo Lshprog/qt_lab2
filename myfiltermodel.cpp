@@ -217,7 +217,7 @@ bool MyFilterModel::checkIndexValue(const QModelIndex index) const
 
 bool MyFilterModel::saveInfoToFile(QString filename)
 {
-   qDebug()<<"CHTONAXYI"<<"\n"<<"\n";
+
    QFile filecheck(filename);
    if(filecheck.open(QIODevice::WriteOnly | QIODevice::Text))
        filecheck.remove();
