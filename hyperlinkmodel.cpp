@@ -269,10 +269,18 @@ bool HyperlinkModel::readFile(QString filename)
                 hyperlink->setCategoryStatus(temp_status);
                 if(lastParent==rootHyperlink)
                     hyperlink->setCategoryStatus(true);
-                int result = lastParent->checkDuplicates(hyperlink);
-                lastParent->appendChild(hyperlink);
-                lastHyperlink = hyperlink;
-                qDebug()<<hyperlink->data(0)<<"1";
+                int cur_row = lastParent->checkDuplicates(hyperlink);
+                if(cur_row!=lastParent->getChildrenSize()+1){
+                    if(lastParent->getCategoryStatusOfChild(cur_row)){
+                        lastParent = lastParent->child(cur_row);
+                        lastHyperlink = lastParent;
+                    }
+
+                }
+                else{
+                    lastParent->appendChild(hyperlink);
+                    lastHyperlink = hyperlink;
+                }
 
             }
             else if(diffIndent > 0){
@@ -284,9 +292,18 @@ bool HyperlinkModel::readFile(QString filename)
                 lastParent = lastHyperlink;
                 Hyperlink *hyperlink = new Hyperlink(infoList,lastParent);
                 hyperlink->setCategoryStatus(temp_status);
-                qDebug()<<hyperlink->data(0)<<"2";
-                lastParent->appendChild(hyperlink);
-                lastHyperlink = hyperlink;
+                int cur_row = lastParent->checkDuplicates(hyperlink);
+                if(cur_row!=lastParent->getChildrenSize()+1){
+                    if(lastParent->getCategoryStatusOfChild(cur_row)){
+                        lastParent = lastParent->child(cur_row);
+                        lastHyperlink = lastParent;
+                    }
+
+                }
+                else{
+                    lastParent->appendChild(hyperlink);
+                    lastHyperlink = hyperlink;
+                }
             }
             else{
                 int iterations = -diffIndent;
@@ -295,9 +312,18 @@ bool HyperlinkModel::readFile(QString filename)
 
                 Hyperlink *hyperlink = new Hyperlink(infoList,lastParent);
                 hyperlink->setCategoryStatus(temp_status);
-                qDebug()<<hyperlink->data(0)<<"3";
-                lastParent->appendChild(hyperlink);
-                lastHyperlink = hyperlink;
+                int cur_row = lastParent->checkDuplicates(hyperlink);
+                if(cur_row!=lastParent->getChildrenSize()+1){
+                    if(lastParent->getCategoryStatusOfChild(cur_row)){
+                        lastParent = lastParent->child(cur_row);
+                        lastHyperlink = lastParent;
+                    }
+
+                }
+                else{
+                    lastParent->appendChild(hyperlink);
+                    lastHyperlink = hyperlink;
+                }
 
             }
 
@@ -371,7 +397,7 @@ QModelIndex HyperlinkModel::addInfoFromDialog(const QModelIndex &index, Hyperlin
 
     int result = parent->checkDuplicates(new_hyperlink);
 
-    if(result==-1){
+    if(result==parent->getChildrenSize()+1){
         insertnewrowchild(parent->getChildrenSize(),index,new_hyperlink);
         return QModelIndex();
     }
@@ -399,7 +425,7 @@ QModelIndex HyperlinkModel::addInfoFromDialogCat(const QModelIndex &index, Hyper
 
     int result = parent->checkDuplicates(new_hyperlink);
 
-    if(result==-1){
+    if(result==parent->getChildrenSize()+1){
         int k = 0;
         while(k<parent->getChildrenSize() && parent->getCategoryStatusOfChild(k))
             k++;

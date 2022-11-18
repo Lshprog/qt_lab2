@@ -143,7 +143,7 @@ int Hyperlink::checkDuplicates(Hyperlink *data)
             return child->row();
         }
     }
-    return -1;
+    return this->children.size()+1;
 }
 
 bool Hyperlink::removeChildren(int position, int count)
