@@ -41,6 +41,8 @@ public:
     bool makeListInfo(QList<QString> *list);
     bool insertnewrowchild(int row, const QModelIndex &parent, Hyperlink *link);
 
+
+
     Hyperlink* returnroot() const;
 
 
@@ -52,6 +54,14 @@ private:
     Hyperlink *rootHyperlink;
 
 
+
+    // QAbstractItemModel interface
+public:
+    QStringList mimeTypes() const override;
+    QMimeData *mimeData(const QModelIndexList &indexes) const override;
+    bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
+    Qt::DropActions supportedDropActions() const override;
+    Qt::DropActions supportedDragActions() const override;
 };
 
 #endif // HYPERLINKMODEL_H

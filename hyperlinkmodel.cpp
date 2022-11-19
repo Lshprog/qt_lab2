@@ -1,7 +1,13 @@
 #include "hyperlinkmodel.h"
 #include <QFont>
 #include <QColor>
+<<<<<<< Updated upstream
 
+=======
+#include <QMessageBox>
+#include <QMimeData>
+#include <QCoreApplication>
+>>>>>>> Stashed changes
 
 HyperlinkModel::HyperlinkModel(QObject *parent)
     : QAbstractItemModel{parent}
@@ -124,7 +130,17 @@ Qt::ItemFlags HyperlinkModel::flags(const QModelIndex &index) const
     if(!index.isValid())
         return Qt::ItemIsEnabled;
 
+<<<<<<< Updated upstream
     return Qt::ItemIsEditable | QAbstractItemModel::flags(index);
+=======
+    Hyperlink *cur = getHyperlinkFromIndex(index);
+    if(cur->getCategoryStatus()&&index.column()==1)
+        return QAbstractItemModel::flags(index)|Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;;
+
+
+
+    return Qt::ItemIsEditable | QAbstractItemModel::flags(index)|Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
+>>>>>>> Stashed changes
 }
 
 bool HyperlinkModel::setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role)
@@ -331,6 +347,129 @@ QVector<QVariant> HyperlinkModel::getInfo(QString lineString)
     return data;
 }
 
+
+static const char s_treeNodeMimeType[] = "application/my.custom.model";
+//static const char s_treeNodeMimeType[] = "application/x-hyperlink";
+
+
+QStringList HyperlinkModel::mimeTypes() const
+{
+    //return QAbstractItemModel::mimeTypes()<<"application/vnd.text.list";
+    //return QAbstractItemModel::mimeTypes()<<s_treeNodeMimeType;
+    return QStringList()<<s_treeNodeMimeType;
+
+}
+
+
+QMimeData *HyperlinkModel::mimeData(const QModelIndexList &indexes) const
+{
+    QMimeData *mimeData = new QMimeData;
+    QByteArray data;
+
+    QDataStream stream(&data,QIODevice::WriteOnly);
+
+    QList<Hyperlink*> nodes;
+
+    for(const QModelIndex &index:indexes){
+        qDebug()<<"mimeData first loop";
+        Hyperlink *cur_node = getHyperlinkFromIndex(index);
+        qDebug()<<cur_node->data(0)<<cur_node->data(2);
+        if(!nodes.contains(cur_node)){
+            nodes<<cur_node;
+            qDebug()<<"mimeData first loop inner check";
+        }
+    }
+
+    stream<<QCoreApplication::applicationPid();
+    stream<<nodes.count();
+    qDebug()<<nodes.count();
+    for(Hyperlink *node:nodes){
+        qDebug()<<"mimeData second loop";
+        stream<<reinterpret_cast<qlonglong>(node);
+    }
+    mimeData->setData(s_treeNodeMimeType,data);
+    return mimeData;
+
+
+}
+
+bool HyperlinkModel::dropMimeData(const QMimeData *mimeData, Qt::DropAction action, int row, int column, const QModelIndex &parent)
+{
+    Q_ASSERT(action == Qt::MoveAction);
+    Q_UNUSED(column);
+    qDebug()<<"here";
+    //test if the data type is the good one
+    if (!mimeData->hasFormat(s_treeNodeMimeType)) {
+        qDebug()<<"nowhere_1";
+        return false;
+    }
+    QByteArray data = mimeData->data(s_treeNodeMimeType);
+    QDataStream stream(&data, QIODevice::ReadOnly);
+    qint64 senderPid;
+    stream >> senderPid;
+    qDebug()<<senderPid;
+    if (senderPid != QCoreApplication::applicationPid()) {
+        // Let's not cast pointers that come from another process...
+        qDebug()<<"nowhere_2";
+        return false;
+    }
+    Hyperlink *parentNode = getHyperlinkFromIndex(parent);
+    Q_ASSERT(parentNode);
+    int count;
+    stream >> count;
+    qDebug()<<"shits "<<count;
+    if (row == -1) {
+        // valid index means: drop onto item. I chose that this should insert
+        // a child item, because this is the only way to create the first child of an item...
+        // This explains why Qt calls it parent: unless you just support replacing, this
+        // is really the future parent of the dropped items.
+        if (parent.isValid())
+            row = 0;
+        else
+            // invalid index means: append at bottom, after last toplevel
+            row = rowCount(parent);
+    }
+    for (int i = 0; i < count; ++i) {
+        // Decode data from the QMimeData
+        qlonglong nodePtr;
+        stream >> nodePtr;
+        Hyperlink *node = reinterpret_cast<Hyperlink *>(nodePtr);
+
+        // Adjust destination row for the case of moving an item
+        // within the same parent, to a position further down.
+        // Its own removal will reduce the final row number by one.
+        if (node->row() < row && parentNode == node->parentHyperlink());
+            --row;
+
+        // Remove from old position
+        //delete node;
+        //removeNode(node);
+
+        Hyperlink *parent_cur = node->parentHyperlink();
+        QList<QVariant> data;
+        data<<node->data(0)<<node->data(1)<<node->data(2);
+        Hyperlink *newHyperlink = new Hyperlink(data,parentNode);
+        newHyperlink->setCategoryStatus(node->getCategoryStatus());
+        for(int i = 0;i<node->getChildrenSize();i++){
+            newHyperlink->appendChild(node->child(i));
+        }
+        //parent_cur->removeChild(node->row());
+        //qDebug() << "Inserting into" << parent << row;
+
+        delete node;
+
+        // Insert at new position
+        qDebug() << "Inserting into" << parent << row;
+        //beginInsertRows(parent, row, row);
+        beginInsertRows(parent,row,row);
+        parentNode->insertChild(row, newHyperlink);
+        endInsertRows();
+        //endInsertRows();
+        ++row;
+    }
+    return true;
+}
+
 bool HyperlinkModel::makeListInfo(QList<QString> *list)
 {
     for (int i=0;i<rootHyperlink->getChildrenSize();i++){
@@ -339,7 +478,12 @@ bool HyperlinkModel::makeListInfo(QList<QString> *list)
 
 }
 
+Qt::DropActions HyperlinkModel::supportedDropActions() const
+{
+    return Qt::MoveAction;
+}
 
-
-
-
+Qt::DropActions HyperlinkModel::supportedDragActions() const
+{
+    return Qt::MoveAction;
+}

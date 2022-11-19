@@ -126,5 +126,96 @@ bool MyFilterModel::hasToBeDisplayed(const QModelIndex index) const
 
     }
     return result;
+<<<<<<< Updated upstream
+=======
+}
+
+QStringList MyFilterModel::mimeTypes() const
+{
+    qDebug()<<"mimetypes in proxy";
+
+    return mymodel->mimeTypes();
+}
+
+QMimeData *MyFilterModel::mimeData(const QModelIndexList &indexes) const
+{
+    qDebug()<<"mimedata in proxy";
+
+        QModelIndexList list;
+        for(const QModelIndex &index:indexes)
+            list<<mapToSource(index);
+        return mymodel->mimeData(list);
+}
+
+bool MyFilterModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)
+{
+    qDebug()<<"dropmime data in proxy";
+
+    //beginResetModel();
+    return mymodel->dropMimeData(data,action,row,column,mapToSource(parent));
+    //endResetModel();
+}
+
+Qt::DropActions MyFilterModel::supportedDropActions() const
+{
+    return Qt::MoveAction;
+}
+
+Qt::DropActions MyFilterModel::supportedDragActions() const
+{
+    return Qt::MoveAction;
+}
+
+Qt::ItemFlags MyFilterModel::flags(const QModelIndex &index) const
+{
+    qDebug()<<"flags in proxy";
+    return mymodel->flags(mapToSource(index));
+}
+
+
+bool MyFilterModel::checkIndexValue(const QModelIndex index) const
+{
+    bool result = true;
+
+    QList<QModelIndex> list1;
+    list1<<sourceModel()->index(index.row(), 0, index.parent())<<sourceModel()->index(index.row(), 1, index.parent())
+        <<sourceModel()->index(index.row(), 2, index.parent());
+    QList<QString> type1;
+    type1<<sourceModel()->data(list1[0],Qt::DisplayRole).toString()<<sourceModel()->data(list1[1], Qt::DisplayRole).toString()
+            <<sourceModel()->data(list1[2], Qt::DisplayRole).toString();
+
+    QRegularExpression re;
+    for(int i=0;i<3;i++){
+        re.setPattern(datalist[i]);
+        if(!type1[i].contains(re)){
+            result = false;
+            break;
+        }
+    }
+
+    return result;
+
+}
+
+bool MyFilterModel::saveInfoToFile(QString filename)
+{
+   qDebug()<<"CHTONAXYI"<<"\n"<<"\n";
+   QFile filecheck(filename);
+   if(filecheck.open(QIODevice::WriteOnly | QIODevice::Text))
+       filecheck.remove();
+
+   QFile file(filename);
+   file.open(QIODevice::WriteOnly | QIODevice::Text);
+
+   QTextStream out(&file);
+
+   QList<QString> hyperlinks;
+   this->makeFileInfo(&hyperlinks);
+
+   for(int i = 0;i<hyperlinks.size();i++){
+       out<<hyperlinks[i].toUtf8()<<"\n";
+   }
+
+>>>>>>> Stashed changes
 
 }

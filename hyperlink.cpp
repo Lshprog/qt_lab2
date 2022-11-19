@@ -32,6 +32,11 @@ void Hyperlink::appendChild(Hyperlink *child)
         this->children.append(child);
 }
 
+void Hyperlink::removeChild(int row)
+{
+    this->children.removeAt(row);
+}
+
 Hyperlink *Hyperlink::child(int row)
 {
     return children.value(row);

@@ -11,6 +11,7 @@ public:
     Hyperlink(const QVector<QVariant> &data, Hyperlink* parent = nullptr);
     ~Hyperlink();
     void appendChild(Hyperlink* child);
+    void removeChild(int row);
     Hyperlink* child(int row);
     int childCount() const;
 

@@ -16,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->treeView->setItemDelegate(hyplinkdelegate);
     ui->treeView->setModel(newproxymodel);
+<<<<<<< Updated upstream
     //newproxymodel->setSourceModel(mymodel);
     //ui->treeView->setModel(newproxymodel);
     //ui->treeView->
@@ -47,6 +48,15 @@ MainWindow::MainWindow(QWidget *parent)
 
     //ui->treeView->selectionModel()->selectedIndexes();
 
+=======
+    ui->treeView->setDragEnabled(true);
+    ui->treeView->setAcceptDrops(true);
+    ui->treeView->setDragDropMode(QAbstractItemView::InternalMove);
+    ui->treeView->setDropIndicatorShown(true);
+    QFont font  = QFont("Times New Roman",12);
+    ui->treeView->setFont(font);
+    ui->actionAdd_hyperlink->setDisabled(true);
+>>>>>>> Stashed changes
 
 }
 
@@ -58,6 +68,18 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_actionRead_file_triggered()
 {
+<<<<<<< Updated upstream
+=======
+    QString filename= QFileDialog::getOpenFileName(this,"Open file: ");
+
+    if(!filename.isEmpty()){
+        newproxymodel->saveInfoToFile("/Users/oleksiionishchenko/Documents/qtprojects/qt_lab2/data/ForDelete.txt");
+        if(!newproxymodel->readFile(filename,0)){
+            newproxymodel->readFile("/Users/oleksiionishchenko/Documents/qtprojects/qt_lab2/data/ForDelete.txt",1);
+        }
+    }
+
+>>>>>>> Stashed changes
 
 }
 
