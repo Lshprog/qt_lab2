@@ -2,6 +2,10 @@
 #include <QQueue>
 #include <QFileDialog>
 
+#include <QMimeData>
+#include <QCoreApplication>
+#include <QMimeType>
+
 MyFilterModel::MyFilterModel(QObject *parent)
     : QSortFilterProxyModel{parent}
 {
@@ -236,4 +240,52 @@ bool MyFilterModel::saveInfoToFile(QString filename)
 
 
    file.close();
+}
+
+
+//static const char s_treeNodeMimeType[] = "application/x-hyperlink";
+////static const char s_treeNodeMimeType[] = "application/x-qabstractitemmodeldatalist";
+
+QStringList MyFilterModel::mimeTypes() const
+{
+    qDebug()<<"here out!!!!!!!!!";
+    return mymodel->mimeTypes();
+}
+
+QMimeData *MyFilterModel::mimeData(const QModelIndexList &indexes) const
+{
+    qDebug()<<"here out";
+    QModelIndexList indexes2;
+    for(const QModelIndex &index : indexes){
+        indexes2<<mapToSource(index);
+    }
+
+    return mymodel->mimeData(indexes2);
+    //return mymodel->mimeData(indexes);
+}
+
+
+
+bool MyFilterModel::dropMimeData(const QMimeData *mimeData, Qt::DropAction action, int row, int column, const QModelIndex &parent)
+{
+    qDebug()<<"NOW HERE out";
+    return mymodel->dropMimeData(mimeData,action,row,column,mapToSource(parent));
+}
+
+
+
+Qt::DropActions MyFilterModel::supportedDropActions() const
+{
+    return Qt::MoveAction;
+}
+
+Qt::DropActions MyFilterModel::supportedDragActions() const
+{
+    return Qt::MoveAction;
+}
+
+
+Qt::ItemFlags MyFilterModel::flags(const QModelIndex &index) const
+{
+   return mymodel->flags(mapToSource(index));
 }

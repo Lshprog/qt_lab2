@@ -5,7 +5,8 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QCloseEvent>
-
+#include <QMimeData>
+#include <QMetaType>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -13,14 +14,21 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    int id = qRegisterMetaType<Hyperlink>("Hyperlink");
+
     HyperlinkDelegate *hyplinkdelegate = new HyperlinkDelegate(this);
     newproxymodel = new MyFilterModel(this);
 
     ui->treeView->setItemDelegate(hyplinkdelegate);
     ui->treeView->setModel(newproxymodel);
+    ui->treeView->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui->treeView->setDragEnabled(true);
+    ui->treeView->setAcceptDrops(true);
+    ui->treeView->setDropIndicatorShown(true);
     QFont font  = QFont("Times New Roman",12);
     ui->treeView->setFont(font);
     ui->actionAdd_hyperlink->setDisabled(true);
+
 
 }
 
@@ -280,6 +288,13 @@ void MainWindow::closeEvent(QCloseEvent *event)
                 event->accept();
             }
     }
+}
+
+void MainWindow::dragEnterEvent(QDragEnterEvent *event)
+{
+    if (event->mimeData()->hasFormat("application/x-hyperlink"))
+           event->acceptProposedAction();
+    qDebug()<<"HereNow";
 }
 
 

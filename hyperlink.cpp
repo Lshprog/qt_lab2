@@ -63,6 +63,17 @@ bool Hyperlink::setData(int column, const QVariant &value)
 
 }
 
+int Hyperlink::getNewRow(bool status)
+{
+    if(status){
+        int i =0;
+        while(i<children.size() && children[i]->getCategoryStatus())
+            i++;
+        return i;
+    }
+    return this->getChildrenSize();
+}
+
 int Hyperlink::row() const
 {
     if(parent){
@@ -72,9 +83,20 @@ int Hyperlink::row() const
     return 0;
 }
 
+
 Hyperlink *Hyperlink::parentHyperlink()
 {
     return parent;
+}
+
+void Hyperlink::setParentHyperlink(Hyperlink *parent)
+{
+    this->parent = parent;
+}
+
+void Hyperlink::removechild(int row)
+{
+    this->children.removeAt(row);
 }
 
 void Hyperlink::setCategoryStatus(bool status)
@@ -128,7 +150,6 @@ bool Hyperlink::insertChild(int position, Hyperlink* child)
     int pos=position;
     if(pos < 0||pos>children.size())
         return false;
-
     this->children.insert(pos,child);
 
     return true;

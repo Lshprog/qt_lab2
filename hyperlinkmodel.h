@@ -50,6 +50,13 @@ public:
     bool getFilterStatus();
     void setFilterStatus(bool status);
 
+    QStringList mimeTypes() const override;
+    QMimeData *mimeData(const QModelIndexList &indexes) const override;
+    //bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
+    bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
+    Qt::DropActions supportedDropActions() const override;
+    Qt::DropActions supportedDragActions() const override;
+
     Hyperlink* returnroot() const;
 
 
@@ -60,6 +67,15 @@ private:
     QPair<QVector<QVariant>,bool>  getInfo(QString lineString);
     Hyperlink *rootHyperlink;
 
+
+
+    // QAbstractItemModel interface
+
+
+    // QAbstractItemModel interface
+
+
+    // QAbstractItemModel interface
 
 };
 
