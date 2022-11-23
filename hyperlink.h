@@ -48,6 +48,7 @@ public:
     int checkDuplicates(Hyperlink *data);
 
 
+
 private:
     QList<Hyperlink* > children;
 //    QString name;

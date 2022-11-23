@@ -59,6 +59,9 @@ public:
 
     Hyperlink* returnroot() const;
 
+    void removeHyperlink(Hyperlink* link);
+
+    bool copyNodes(const QModelIndex& link1,const QModelIndex& link2);
 
 private:
     //void showInfo();

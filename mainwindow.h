@@ -77,6 +77,6 @@ protected:
 
     // QWidget interface
 protected:
-    void dragEnterEvent(QDragEnterEvent *event);
+    //void dragEnterEvent(QDragEnterEvent *event);
 };
 #endif // MAINWINDOW_H

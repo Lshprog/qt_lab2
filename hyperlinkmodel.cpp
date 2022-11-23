@@ -15,6 +15,7 @@ HyperlinkModel::HyperlinkModel(QObject *parent)
      setFilterStatus(false);
      rootData<<"Name"<<"Hyperlink"<<"Description";
      rootHyperlink = new Hyperlink(rootData);
+     rootHyperlink->setCategoryStatus(true);
      //readFile("filename");
 }
 
@@ -216,6 +217,7 @@ bool HyperlinkModel::removeRows(int row, int count, const QModelIndex &parent)
     success = parentHyperlink->removeChildren(row,count);
     endRemoveRows();
 
+
     return success;
 }
 
@@ -263,7 +265,7 @@ bool HyperlinkModel::readFile(QString filename)
 
             qDebug()<<diffIndent;
 
-            if(infoList.size()<1 || infoList.size()>4 || (diffIndent>1 && lastParent==rootHyperlink)){
+            if(infoList.size()<1 || infoList.size()>4 || (diffIndent>1 && lastParent==rootHyperlink)||lastParent->getChildrenSize()>30){
                 cleanup();
                 QMessageBox msgBox;
                 msgBox.setWindowTitle("ERROR!");
@@ -289,6 +291,7 @@ bool HyperlinkModel::readFile(QString filename)
 
                 }
                 else{
+
                     lastParent->appendChild(hyperlink);
                     lastHyperlink = hyperlink;
                 }
@@ -297,19 +300,20 @@ bool HyperlinkModel::readFile(QString filename)
             else if(diffIndent > 0){
                 if(!lastHyperlink->getCategoryStatus()){
                     lastHyperlink->setCategoryStatus(true);
-                    lastHyperlink->setData(1,"");
+                    if(lastHyperlink->columnCount()>1)
+                        lastHyperlink->setData(1,"");
                 }
 
                 lastParent = lastHyperlink;
                 Hyperlink *hyperlink = new Hyperlink(infoList,lastParent);
                 hyperlink->setCategoryStatus(temp_status);
                 int cur_row = lastParent->checkDuplicates(hyperlink);
+
                 if(cur_row!=lastParent->getChildrenSize()+1){
                     if(lastParent->getCategoryStatusOfChild(cur_row)){
                         lastParent = lastParent->child(cur_row);
                         lastHyperlink = lastParent;
                     }
-
                 }
                 else{
                     lastParent->appendChild(hyperlink);
@@ -332,8 +336,10 @@ bool HyperlinkModel::readFile(QString filename)
 
                 }
                 else{
+
                     lastParent->appendChild(hyperlink);
                     lastHyperlink = hyperlink;
+
                 }
 
             }
@@ -404,186 +410,189 @@ QMimeData *HyperlinkModel::mimeData(const QModelIndexList &indexes) const
 
 bool HyperlinkModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)
 {
-
-
-
+    qDebug()<<row<<column;
     if (action == Qt::IgnoreAction)
             return true;
 
-        if (!data->hasFormat("text/plain"))
+    if (!data->hasFormat("text/plain"))
+        return false;
+
+//    int beginRow;
+
+//    if (row != -1)
+//        beginRow = row;
+//    else if (parent.isValid())
+//        beginRow = 0;
+//    else
+//        beginRow = rowCount(QModelIndex());
+
+    QByteArray encodedData = data->data("text/plain");
+    QDataStream stream(&encodedData, QIODevice::ReadOnly);
+    QHash<qint64, QMap<int,QHash<int,QString> > > newItems;
+    QList<Hyperlink*> list;
+
+    while (!stream.atEnd()) {
+        qint64 id;
+        int row;
+        int column;
+        QString text;
+        stream >> id >> row >> column >> text;
+        newItems[id][row][column] = text;
+        QModelIndex index = createIndex(row,column,id);
+        Hyperlink* cur = getHyperlinkFromIndex(index);
+        if(!list.contains(cur))
+            list<<cur;
+    }
+    //int rows = newItems.count();
+
+    for(Hyperlink * cur_link:list){
+        cur_link->showInfo();
+
+        Hyperlink *oldparentlink = cur_link->parentHyperlink();
+        Hyperlink *newparentlink = getHyperlinkFromIndex(parent);
+
+        if(oldparentlink == newparentlink)
             return false;
 
-        int beginRow;
-
-        if (row != -1)
-            beginRow = row;
-        else if (parent.isValid())
-            beginRow = 0;
-        else
-            beginRow = rowCount(QModelIndex());
-
-        QByteArray encodedData = data->data("text/plain");
-        QDataStream stream(&encodedData, QIODevice::ReadOnly);
-        QHash<qint64, QMap<int,QHash<int,QString> > > newItems;
-        QList<Hyperlink*> list;
-
-        while (!stream.atEnd()) {
-            qint64 id;
-            int row;
-            int column;
-            QString text;
-            stream >> id >> row >> column >> text;
-            newItems[id][row][column] = text;
-            QModelIndex index = createIndex(row,column,id);
-            Hyperlink* cur = getHyperlinkFromIndex(index);
-            if(!list.contains(cur))
-                list<<cur;
-        }
-        //int rows = newItems.count();
-
-        for(Hyperlink * cur_link:list){
-            cur_link->showInfo();
-
-            Hyperlink *oldparentlink = cur_link->parentHyperlink();
-            Hyperlink *newparentlink = getHyperlinkFromIndex(parent);
-
-            if(oldparentlink == newparentlink)
-                return false;
-
-            if(newparentlink==rootHyperlink && !cur_link->getCategoryStatus())
-                return false;
+        if(newparentlink==rootHyperlink && !cur_link->getCategoryStatus())
+            return false;
 
 
-            beginResetModel();
+        beginResetModel();
 
-            int result = newparentlink->checkDuplicates(cur_link);
-            if(result!=newparentlink->getChildrenSize()+1){
-                Hyperlink* duplicatelink = newparentlink->child(result);
-                QQueue<QPair<Hyperlink*,Hyperlink*>> queue;
-                QPair<Hyperlink*,Hyperlink*> pairentry(cur_link,duplicatelink);
-                queue.enqueue(pairentry);
-                while(!queue.isEmpty())
-                {
-                    QPair<Hyperlink*,Hyperlink*> pair = queue.dequeue();
+        int result = newparentlink->checkDuplicates(cur_link);
+        if(result!=newparentlink->getChildrenSize()+1){
+            Hyperlink* duplicatelink = newparentlink->child(result);
+            QQueue<QPair<Hyperlink*,Hyperlink*>> queue;
+            QPair<Hyperlink*,Hyperlink*> pairentry(cur_link,duplicatelink);
+            queue.enqueue(pairentry);
+            while(!queue.isEmpty())
+            {
+                QPair<Hyperlink*,Hyperlink*> pair = queue.dequeue();
 
-                    for(int i =0;i<pair.first->getChildrenSize();i++){
-                        int check_row = pair.second->checkDuplicates(pair.first->child(i));
-                        if(check_row!=pair.second->getChildrenSize()+1){
-                            QPair<Hyperlink*,Hyperlink*> newpair(pair.first->child(i),pair.second->child(check_row));
-                            queue.enqueue(newpair);
-                        }
-                        else{
-                            int temp_row = pair.first->child(i)->row();
-                            pair.first->child(i)->setParentHyperlink(pair.second);
-                            pair.second->appendChild(pair.first->child(i));
-                            pair.first->removechild(temp_row);
-
-                        }
+                for(int i =0;i<pair.first->getChildrenSize();i++){
+                    int check_row = pair.second->checkDuplicates(pair.first->child(i));
+                    if(check_row!=pair.second->getChildrenSize()+1){
+                        QPair<Hyperlink*,Hyperlink*> newpair(pair.first->child(i),pair.second->child(check_row));
+                        queue.enqueue(newpair);
                     }
-                    Hyperlink* parenttemp = pair.first->parentHyperlink();
-                    parenttemp->removechild(pair.first->row());
+                    else{
+                        int temp_row = pair.first->child(i)->row();
+                        pair.first->child(i)->setParentHyperlink(pair.second);
+                        pair.second->appendChild(pair.first->child(i));
+                        pair.first->removechild(temp_row);
+
+                    }
                 }
+                Hyperlink* parenttemp = pair.first->parentHyperlink();
+                parenttemp->removechild(pair.first->row());
             }
-            else{
-                int temp_row = cur_link->row();
-                cur_link->setParentHyperlink(newparentlink);
-                newparentlink->appendChild(cur_link);
-                qDebug()<<cur_link->row();
-                oldparentlink->removechild(temp_row);
-            }
-            endResetModel();
-
         }
+        else{
+            int temp_row = cur_link->row();
+            cur_link->setParentHyperlink(newparentlink);
+            newparentlink->appendChild(cur_link);
+            qDebug()<<cur_link->row();
+            oldparentlink->removechild(temp_row);
+        }
+        endResetModel();
 
-//        QByteArray encodedData = data->data("text/plain");
-//        QDataStream stream(&encodedData, QIODevice::ReadOnly);
-//        QHash<qint64, QMap<int,QHash<int,QString> > > newItems;
-//        QList<QModelIndex> list;
+    }
 
-//        while (!stream.atEnd()) {
-//            qint64 id;
-//            int row;
-//            int column;
-//            QString text;
-//            stream >> id >> row >> column >> text;
-//            newItems[id][row][column] = text;
-//            QModelIndex index = createIndex(row,column,id);
-//            if(index.column()==0)
-//                list<<index;
-//        }
-//        //int rows = newItems.count();
+//    QByteArray encodedData = data->data("text/plain");
+//    QDataStream stream(&encodedData, QIODevice::ReadOnly);
+//    QHash<qint64, QMap<int,QHash<int,QString> > > newItems;
+//    QList<QModelIndex> list;
 
-//        for(QModelIndex cur_link:list){
-//            Hyperlink* cur_hyperlink = getHyperlinkFromIndex(cur_link);
-//            Hyperlink *oldparentlink = cur_hyperlink->parentHyperlink();
-//            Hyperlink *newparentlink = getHyperlinkFromIndex(parent);
+//    while (!stream.atEnd()) {
+//        qint64 id;
+//        int row;
+//        int column;
+//        QString text;
+//        stream >> id >> row >> column >> text;
+//        newItems[id][row][column] = text;
+//        QModelIndex index = createIndex(row,column,id);
+//        if(index.column()==0)
+//            list<<index;
+//    }
+//    //int rows = newItems.count();
 
-//            if(oldparentlink == newparentlink)
-//                return false;
+//    for(QModelIndex cur_link:list){
+//        Hyperlink* cur_hyperlink = getHyperlinkFromIndex(cur_link);
+//        //cur_hyperlink->showInfo();
+//        Hyperlink *oldparentlink = cur_hyperlink->parentHyperlink();
+//        Hyperlink *newparentlink = getHyperlinkFromIndex(parent);
 
-//            if(newparentlink==rootHyperlink && !cur_hyperlink->getCategoryStatus())
-//                return false;
+//        if(oldparentlink == newparentlink)
+//            return false;
+
+//        if(newparentlink==rootHyperlink && !cur_hyperlink->getCategoryStatus())
+//            return false;
 
 
-//            //beginResetModel();
 
-//            int result = newparentlink->checkDuplicates(cur_hyperlink);
-//            if(result!=newparentlink->getChildrenSize()+1){
-//                //Hyperlink* duplicatelink = newparentlink->child(result);
-//                QModelIndex duplicateindex = index(result,0,parent);
-//                QQueue<QPair<QModelIndex,QModelIndex>> queue;
-//                QPair<QModelIndex,QModelIndex> pairentry(cur_link,duplicateindex);
-//                queue.enqueue(pairentry);
-//                while(!queue.isEmpty())
-//                {
-//                    QPair<QModelIndex,QModelIndex> pair = queue.dequeue();
+ //       copyNodes(cur_link,parent);
+        //beginResetModel();
 
-//                    Hyperlink* firstLink = getHyperlinkFromIndex(pair.first);
-//                    Hyperlink* secondLink = getHyperlinkFromIndex(pair.second);
+//        int result = newparentlink->checkDuplicates(cur_hyperlink);
+//        if(result!=newparentlink->getChildrenSize()+1){
+//            //Hyperlink* duplicatelink = newparentlink->child(result);
+//            QModelIndex duplicateindex = index(result,0,parent);
+//            QQueue<QPair<QModelIndex,QModelIndex>> queue;
+//            QPair<QModelIndex,QModelIndex> pairentry(cur_link,duplicateindex);
+//            queue.enqueue(pairentry);
+//            while(!queue.isEmpty())
+//            {
+//                QPair<QModelIndex,QModelIndex> pair = queue.dequeue();
 
-//                    for(int i =0;i<firstLink->getChildrenSize();i++){
-//                        int check_row = secondLink->checkDuplicates(firstLink->child(i));
-//                        if(check_row!=secondLink->getChildrenSize()+1){
-//                            QPair<QModelIndex,QModelIndex> newpair(index(i,0,pair.first),index(check_row,0,pair.second));
-//                            queue.enqueue(newpair);
-//                        }
-//                        else{
-//                            int temp_row = firstLink->child(i)->row();
-//                            int new_row = secondLink->getNewRow(firstLink->child(i)->getCategoryStatus());
-//                            beginInsertRows(pair.second,new_row,new_row);
-//                            insertnewrowchild(new_row,pair.second,firstLink->child(i));
-//                            endInsertRows();
-//                            firstLink->child(i)->setParentHyperlink(secondLink);
-//                            beginRemoveRows(pair.first,temp_row,temp_row);
-//                            firstLink->removechild(temp_row);
-//                            endRemoveRows();
+//                Hyperlink* firstLink = getHyperlinkFromIndex(pair.first);
+//                Hyperlink* secondLink = getHyperlinkFromIndex(pair.second);
 
-//                        }
+//                //firstLink->showInfo();
+//                //secondLink->showInfo();
+
+//                for(int i =0;i<firstLink->getChildrenSize();i++){
+//                    int check_row = secondLink->checkDuplicates(firstLink->child(i));
+//                    if(check_row!=secondLink->getChildrenSize()+1){
+//                        QPair<QModelIndex,QModelIndex> newpair(index(i,0,pair.first),index(check_row,0,pair.second));
+//                        queue.enqueue(newpair);
 //                    }
-//                    Hyperlink* parenttemp = firstLink->parentHyperlink();
-//                    parenttemp->removechild(firstLink->row());
+//                    else{
+//                        //int temp_row = firstLink->child(i)->row();
+//                        int new_row = secondLink->getNewRow(firstLink->child(i)->getCategoryStatus());
+
+//                        insertnewrowchild(new_row,pair.second,firstLink->child(i));
+
+//                        firstLink->child(i)->setParentHyperlink(secondLink);
+//                        removeHyperlink(firstLink->child(i));
+
+//                    }
 //                }
+//                //Hyperlink* parenttemp = firstLink->parentHyperlink();
+//                //parenttemp->removechild(firstLink->row());
+//                removeHyperlink(firstLink);
 //            }
-//            else{
-//                int temp_row = cur_hyperlink->row();
-//                QModelIndex oldparentindex= cur_link.parent();
-//                cur_hyperlink->setParentHyperlink(newparentlink);
-//                int new_row = newparentlink->getNewRow(cur_hyperlink->getCategoryStatus());
+//        }
+//        else{
+//            //int temp_row = cur_hyperlink->row();
+//            int new_row = newparentlink->getNewRow(cur_hyperlink->getCategoryStatus());
 
-//                beginInsertRows(parent,new_row,new_row);
-//                insertnewrowchild(new_row,parent,cur_hyperlink);
-//                endInsertRows();
+//            removeHyperlink(cur_hyperlink);
 
-//                beginRemoveRows(oldparentindex,temp_row,temp_row);
-//                oldparentlink->removechild(temp_row);
-//                endRemoveRows();
+//            insertnewrowchild(new_row,parent,cur_hyperlink);
+//            cur_hyperlink->setParentHyperlink(newparentlink);
 
-//            }
-//            //endResetModel();
+//            new_row++;
+
+
 
 //        }
+//        //endResetModel();
 
-       return true;
+//    }
+
+    //}
+   return true;
 
 }
 
@@ -691,6 +700,68 @@ Hyperlink *HyperlinkModel::returnroot() const
 {
     return rootHyperlink;
 }
+
+void HyperlinkModel::removeHyperlink(Hyperlink *node)
+{
+    const int row = node->row();
+    QModelIndex idx = createIndex(row, 0, node);
+    beginRemoveRows(idx.parent(), row, row);
+    node->parentHyperlink()->removechild(row);
+    endRemoveRows();
+}
+
+//bool HyperlinkModel::copyNodes(const QModelIndex &link1, const QModelIndex &newparentlink)
+//{
+
+
+//    QQueue<QPair<QModelIndex,QModelIndex>> queue;
+//    QPair<QModelIndex,QModelIndex> pair(link1,newparentlink);
+//    queue.enqueue(pair);
+
+//    while(!queue.isEmpty()){
+
+//        QPair<QModelIndex,QModelIndex> to_compare=queue.dequeue();
+
+//        Hyperlink* hyp1 = getHyperlinkFromIndex(to_compare.first);
+//        Hyperlink* newparenthyp = getHyperlinkFromIndex(to_compare.second);
+
+//        int result = newparenthyp->checkDuplicates(hyp1);
+
+//        if(result!=newparenthyp->getChildrenSize()+1){
+//            const QModelIndex &takeindex = this->index(result,0,to_compare.second);
+//            for(int i = 0;i<hyp1->getChildrenSize();i++){
+//                copyNodes(this->index(i,0,to_compare.first),takeindex);
+//            }
+//        }
+//        else{
+
+//            QList<QVariant> data;
+//            data<<hyp1->data(0)<<hyp1->data(1)<<hyp1->data(2);
+//            Hyperlink* newnode = new Hyperlink(data,newparenthyp);
+//            newnode->setCategoryStatus(hyp1->getCategoryStatus());
+
+//            int new_row = newparenthyp->getNewRow(newnode->getCategoryStatus());
+//            insertnewrowchild(new_row,newparentlink,newnode);
+
+//            const QModelIndex &index = this->index(new_row,0,to_compare.second);
+
+//            for(int i = 0;i<hyp1->getChildrenSize();i++){
+//                copyNodes(this->index(i,0,to_compare.first),index);
+//            }
+//            //QQueue<QPair<QModelIndex,QModelIndex>> queue_internal;
+//            //QPair<QModelIndex,QModelIndex> pair_internal(,newparentlink);
+//            //queue_internal.enqueue(pair_internal);
+
+//        }
+//    }
+//    Hyperlink* hyp1 = getHyperlinkFromIndex(link1);
+//    Hyperlink* hyp1parent = hyp1->parentHyperlink();
+//    beginRemoveRows(link1.parent(),hyp1->row(),hyp1->row());
+//    hyp1parent->removechild(hyp1->row());
+//    endRemoveRows();
+//    return true;
+
+//}
 
 
 QPair<QVector<QVariant>,bool> HyperlinkModel::getInfo(QString lineString)

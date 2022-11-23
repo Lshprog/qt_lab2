@@ -151,6 +151,7 @@ bool Hyperlink::insertChild(int position, Hyperlink* child)
     if(pos < 0||pos>children.size())
         return false;
     this->children.insert(pos,child);
+    //child->setParentHyperlink(this);
 
     return true;
 }

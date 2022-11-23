@@ -22,6 +22,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->treeView->setItemDelegate(hyplinkdelegate);
     ui->treeView->setModel(newproxymodel);
     ui->treeView->setSelectionMode(QAbstractItemView::SingleSelection);
+    //ui->treeView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    //ui->treeView->setDragDropMode(QAbstractItemView::InternalMove);
     ui->treeView->setDragEnabled(true);
     ui->treeView->setAcceptDrops(true);
     ui->treeView->setDropIndicatorShown(true);
@@ -57,8 +59,12 @@ void MainWindow::on_actionOpen_file_triggered()
 {
     QString filename= QFileDialog::getOpenFileName(this,"Open file: ");
 
-    if(!filename.isEmpty())
-        newproxymodel->readFile(filename,1);
+    if(!filename.isEmpty()){
+        newproxymodel->saveInfoToFile("C:/Users/onisa/source/repos/qt_project_2/qt-lab2-lastversion/data/ForDelete.txt");
+        if(!newproxymodel->readFile(filename,1)){
+            newproxymodel->readFile("C:/Users/onisa/source/repos/qt_project_2/qt-lab2-lastversion/data/ForDelete.txt",1);
+        }
+    }
 
 }
 
@@ -290,12 +296,12 @@ void MainWindow::closeEvent(QCloseEvent *event)
     }
 }
 
-void MainWindow::dragEnterEvent(QDragEnterEvent *event)
-{
-    if (event->mimeData()->hasFormat("application/x-hyperlink"))
-           event->acceptProposedAction();
-    qDebug()<<"HereNow";
-}
+//void MainWindow::dragEnterEvent(QDragEnterEvent *event)
+//{
+//    if (event->mimeData()->hasFormat("application/x-hyperlink"))
+//           event->acceptProposedAction();
+//    qDebug()<<"HereNow";
+//}
 
 
 
