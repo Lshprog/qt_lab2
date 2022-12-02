@@ -269,9 +269,9 @@ QMimeData *MyFilterModel::mimeData(const QModelIndexList &indexes) const
 bool MyFilterModel::dropMimeData(const QMimeData *mimeData, Qt::DropAction action, int row, int column, const QModelIndex &parent)
 {
     qDebug()<<"NOW HERE out";
-    beginResetModel();
+    //beginResetModel();
     return mymodel->dropMimeData(mimeData,action,row,column,mapToSource(parent));
-    endResetModel();
+    //endResetModel();
 }
 
 
