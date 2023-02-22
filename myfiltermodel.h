@@ -24,7 +24,7 @@ public:
     void setFilterStatus(bool status);
     bool checkTopLevelChildren();
     bool checkIndexValue(const QModelIndex index) const;
-    bool saveInfoToFile(QString filename);
+    void saveInfoToFile(QString filename);
 
 
     QStringList mimeTypes() const override;

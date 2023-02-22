@@ -12,9 +12,10 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
+
     ui->setupUi(this);
 
-    int id = qRegisterMetaType<Hyperlink>("Hyperlink");
+    //int id = qRegisterMetaType<Hyperlink>("Hyperlink");
 
     HyperlinkDelegate *hyplinkdelegate = new HyperlinkDelegate(this);
     newproxymodel = new MyFilterModel(this);
@@ -50,7 +51,6 @@ void MainWindow::on_actionRead_file_triggered()
             newproxymodel->readFile("C:/Users/onisa/source/repos/qt_project_2/qt-lab2-lastversion/data/ForDelete.txt",1);
         }
     }
-
 
 }
 
@@ -304,4 +304,19 @@ void MainWindow::closeEvent(QCloseEvent *event)
 //}
 
 
+
+
+void MainWindow::on_actionUpload_new_links_triggered()
+{
+    QString filename = "C:\\Users\\onisa\\OneDrive\\Documents\\vscode_projects\\google_chrome_ext\\mynewfile1.txt";
+    if(!filename.isEmpty()){
+        newproxymodel->readFile(filename,0);
+        QFile filecheck(filename);
+        if(filecheck.open(QIODevice::WriteOnly | QIODevice::Text))
+            filecheck.remove();
+        QFile file(filename);
+        file.open(QIODevice::WriteOnly | QIODevice::Text);
+        file.close();
+    }
+}
 

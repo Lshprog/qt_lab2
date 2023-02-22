@@ -8,7 +8,6 @@
 #include "myfiltermodel.h"
 #include <QAbstractItemModel>
 
-
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -59,6 +58,8 @@ private slots:
     void on_checkBox_stateChanged(int arg1);
 
 
+
+    void on_actionUpload_new_links_triggered();
 
 private:
     //void readFile();

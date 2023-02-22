@@ -416,14 +416,14 @@ bool HyperlinkModel::dropMimeData(const QMimeData *data, Qt::DropAction action, 
    if (!data->hasFormat("text/plain"))
        return false;
 
-   int beginRow;
+//   int beginRow;
 
-   if (row != -1)
-       beginRow = row;
-   else if (parent.isValid())
-       beginRow = 0;
-   else
-       beginRow = rowCount(QModelIndex());
+//   if (row != -1)
+//       beginRow = row;
+//   else if (parent.isValid())
+//       beginRow = 0;
+//   else
+//       beginRow = rowCount(QModelIndex());
 
    QByteArray encodedData = data->data("text/plain");
    QDataStream stream(&encodedData, QIODevice::ReadOnly);
@@ -496,9 +496,6 @@ bool HyperlinkModel::dropMimeData(const QMimeData *data, Qt::DropAction action, 
        }
 
        endResetModel();
-
-
-
     }
    return true;
 }
@@ -702,6 +699,7 @@ bool HyperlinkModel::makeListInfo(QList<QString> *list)
     for (int i=0;i<rootHyperlink->getChildrenSize();i++){
         rootHyperlink->child(i)->listInfo(list,0);
     }
+    return true;
 
 }
 

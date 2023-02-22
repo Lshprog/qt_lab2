@@ -108,6 +108,7 @@
     <addaction name="actionDelete_row"/>
     <addaction name="separator"/>
     <addaction name="actionAdd_top_level_category"/>
+    <addaction name="actionUpload_new_links"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuActions"/>
@@ -195,6 +196,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionUpload_new_links">
+   <property name="text">
+    <string>Upload new links</string>
    </property>
   </action>
  </widget>

@@ -1,6 +1,0 @@
-Qt::::Links::true
-	QtClasses::::Different Classes that i used::true
-		QStyledItemDelegate::https://doc.qt.io/qt-6/qstyleditemdelegate.html::The QStyledItemDelegate class provides display and editing facilities for data items from a model::false
-		QAbstractItemModel::https://doc.qt.io/qt-5/qabstractitemmodel.html::The QAbstractItemModel class provides the abstract interface for item model classes::false
-		QSortFilterProxyModel::https://doc.qt.io/qt-6/qsortfilterproxymodel.html::The QSortFilterProxyModel class provides support for sorting and filtering data passed between another model and a view::false
-		QItemSelectionModel Set Current Index::https://doc.qt.io/qt-6/qitemselectionmodel.html#setCurrentIndex::Sets the model item index to be the current item, and emits currentChanged(). The current item is used for keyboard navigation and focus indication; it is independent of any selected items, although a selected item can also be the current item::false

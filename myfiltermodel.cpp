@@ -219,7 +219,7 @@ bool MyFilterModel::checkIndexValue(const QModelIndex index) const
 
 }
 
-bool MyFilterModel::saveInfoToFile(QString filename)
+void MyFilterModel::saveInfoToFile(QString filename)
 {
 
    QFile filecheck(filename);
