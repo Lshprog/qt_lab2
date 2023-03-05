@@ -30,5 +30,6 @@ void hyperlinktest::mySecondTest()
 
 void hyperlinktest::cleanupTestCase()
 {
+
     qDebug("Called after myFirstTest and mySecondTest.");
 }

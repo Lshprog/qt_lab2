@@ -149,6 +149,7 @@ bool MyFilterModel::hasToBeDisplayed(const QModelIndex index) const
     }
     else
     {
+        //if(!mymodel->getHyperlinkFromIndex(sourceModel()->index(index.row(),0,index.parent()))->getCategoryStatus()&&!mymodel->getFilterStatus())
         return checkIndexValue(index);
 
     }

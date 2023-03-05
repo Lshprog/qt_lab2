@@ -6,6 +6,7 @@
 #include <QAbstractItemModelTester>
 #include "hyperlinkmodel.h"
 
+
 class HyperlinkModelTest : public QObject
 {
     Q_OBJECT
@@ -17,12 +18,19 @@ private:
 private slots:
     void initTestCase();
 
-    void myFirstTest();
+    void modelReadFileTest();
 
-    void mySecondTest();
+    void modelSetDataTest();
+
+    void newChildrenTest();
+
+    void removeRowsTest();
+
+    void mimeDataTest();
 
     void cleanupTestCase();
-
+private:
+    HyperlinkModel *mymodel;
 };
 
 #endif // HYPERLINKMODELTEST_H

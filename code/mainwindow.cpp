@@ -48,7 +48,15 @@ void MainWindow::on_actionRead_file_triggered()
     if(!filename.isEmpty()){
         newproxymodel->saveInfoToFile("C:/Users/onisa/source/repos/qt_project_2/qt-lab2-lastversion/data/ForDelete.txt");
         if(!newproxymodel->readFile(filename,0)){
-            newproxymodel->readFile("C:/Users/onisa/source/repos/qt_project_2/qt-lab2-lastversion/data/ForDelete.txt",1);
+            bool result = newproxymodel->readFile("C:/Users/onisa/source/repos/qt_project_2/qt-lab2-lastversion/data/ForDelete.txt",1);
+            QMessageBox msgBox;
+            msgBox.setWindowTitle("Failure!");
+            msgBox.setText("Incorrect file!");
+            //msgBox.setInformativeText();
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            msgBox.setIcon(QMessageBox::Critical);
+            int ret = msgBox.exec();
+
         }
     }
 
@@ -62,9 +70,19 @@ void MainWindow::on_actionOpen_file_triggered()
     if(!filename.isEmpty()){
         newproxymodel->saveInfoToFile("C:/Users/onisa/source/repos/qt_project_2/qt-lab2-lastversion/data/ForDelete.txt");
         if(!newproxymodel->readFile(filename,1)){
-            newproxymodel->readFile("C:/Users/onisa/source/repos/qt_project_2/qt-lab2-lastversion/data/ForDelete.txt",1);
+            bool result = newproxymodel->readFile("C:/Users/onisa/source/repos/qt_project_2/qt-lab2-lastversion/data/ForDelete.txt",1);
+
+            QMessageBox msgBox;
+            msgBox.setWindowTitle("Failure!");
+            msgBox.setText("Incorrect file!");
+            //msgBox.setInformativeText();
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            msgBox.setIcon(QMessageBox::Critical);
+            int ret = msgBox.exec();
+
         }
     }
+
 
 }
 
@@ -210,7 +228,7 @@ void MainWindow::on_actionAdd_top_level_category_triggered()
 
 void MainWindow::on_lineEditName_textChanged(const QString &arg1)
 {
-    Q_UNUSED(arg1)
+    //Q_UNUSED(arg1)
     newproxymodel->datalist[0] = arg1;
     newproxymodel->setFilterRegularExpression(ui->lineEditName->text());
     ui->treeView->expandAll();
@@ -219,7 +237,7 @@ void MainWindow::on_lineEditName_textChanged(const QString &arg1)
 
 void MainWindow::on_lineEditHyperlink_textChanged(const QString &arg1)
 {
-    Q_UNUSED(arg1)
+    //Q_UNUSED(arg1)
     newproxymodel->datalist[1] = arg1;
     newproxymodel->setFilterRegularExpression(ui->lineEditHyperlink->text());
     ui->treeView->expandAll();
@@ -228,7 +246,7 @@ void MainWindow::on_lineEditHyperlink_textChanged(const QString &arg1)
 
 void MainWindow::on_lineEditDescription_textChanged(const QString &arg1)
 {
-    Q_UNUSED(arg1)
+    //Q_UNUSED(arg1)
     newproxymodel->datalist[2] = arg1;
     newproxymodel->setFilterRegularExpression(ui->lineEditDescription->text());
     ui->treeView->expandAll();

@@ -40,9 +40,9 @@ private:
 
     bool hasToBeDisplayed(const QModelIndex index) const;
     bool hasToBeDisplayedCat(const QModelIndex index) const;
+
+private:
     HyperlinkModel* mymodel;
-
-
 
 };
 

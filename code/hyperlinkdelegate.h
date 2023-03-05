@@ -5,7 +5,6 @@
 #include <QStyledItemDelegate>
 #include <QObject>
 #include <QPainter>
-#include "clickablelabel.h"
 #include "hyperlink.h"
 
 

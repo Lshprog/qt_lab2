@@ -30,7 +30,6 @@ QModelIndex HyperlinkModel::index(int row, int column, const QModelIndex &parent
     if(!hasIndex(row,column,parent))
         return QModelIndex();
     Hyperlink *parentHyperlink;
-
     if(!parent.isValid())
         parentHyperlink = rootHyperlink;
     else
@@ -185,8 +184,8 @@ bool HyperlinkModel::setData(const QModelIndex &index, const QVariant &value, in
         return false;
 
     Hyperlink *hyperlink = getHyperlinkFromIndex(index);
-//    if(index.column()==1 && hyperlink->getCategoryStatus())
-//        return false;
+    if(index.column()==1 && hyperlink->getCategoryStatus())
+        return false;
 
     bool result = hyperlink->setData(index.column(),value);
 
@@ -240,6 +239,9 @@ bool HyperlinkModel::readFile(QString filename)
     //QString filename = "/Users/oleksiionishchenko/Documents/qtprojects/qt_lab2/data/familytree1.txt";
     beginResetModel();
     qDebug()<<filename;
+    QStringList split = filename.split(".");
+    if(split[1]!="txt") return false;
+
     QFile inputFile(filename);
 
     if(inputFile.open(QIODevice::ReadOnly)){
@@ -255,15 +257,20 @@ bool HyperlinkModel::readFile(QString filename)
             QString line = in.readLine();
             int currentIndentation = line.count("\t");
 
-            qDebug()<<currentIndentation;
+            //qDebug()<<currentIndentation;
             QPair<QVector<QVariant>,bool> pair = getInfo(line);
+
+            if(pair.first.empty()){
+                this->cleanup();
+                return false;
+            }
 
             QVector<QVariant> infoList = pair.first;
             bool temp_status = pair.second;
 
             int diffIndent = currentIndentation - lastIndentation;
 
-            qDebug()<<diffIndent;
+            //qDebug()<<diffIndent;
 
             if(infoList.size()<1 || infoList.size()>4 || (diffIndent>1 && lastParent==rootHyperlink)||lastParent->getChildrenSize()>30){
                 cleanup();
@@ -432,12 +439,12 @@ bool HyperlinkModel::dropMimeData(const QMimeData *data, Qt::DropAction action, 
 
    while (!stream.atEnd()) {
        qint64 id;
-       int row;
-       int column;
+       int _row;
+       int _column;
        QString text;
-       stream >> id >> row >> column >> text;
-       newItems[id][row][column] = text;
-       QModelIndex index = createIndex(row,column,id);
+       stream >> id >> _row >> _column >> text;
+       newItems[id][_row][_column] = text;
+       QModelIndex index = createIndex(_row,_column,id);
        Hyperlink* cur = getHyperlinkFromIndex(index);
        if(!list.contains(cur))
            list<<cur;
@@ -605,14 +612,14 @@ Hyperlink *HyperlinkModel::returnroot() const
     return rootHyperlink;
 }
 
-void HyperlinkModel::removeHyperlink(Hyperlink *node)
-{
-    const int row = node->row();
-    QModelIndex idx = createIndex(row, 0, node);
-    beginRemoveRows(idx.parent(), row, row);
-    node->parentHyperlink()->removechild(row);
-    endRemoveRows();
-}
+//bool HyperlinkModel::removeHyperlink(Hyperlink *node)
+//{
+//    const int row = node->row();
+//    QModelIndex idx = createIndex(row, 0, node);
+//    beginRemoveRows(idx.parent(), row, row);
+//    node->parentHyperlink()->removechild(row);
+//    endRemoveRows();
+//}
 
 //bool HyperlinkModel::copyNodes(const QModelIndex &link1, const QModelIndex &newparentlink)
 //{
@@ -670,9 +677,11 @@ void HyperlinkModel::removeHyperlink(Hyperlink *node)
 
 QPair<QVector<QVariant>,bool> HyperlinkModel::getInfo(QString lineString)
 {
+    QPair<QVector<QVariant>,bool> pair;
     QString cleanedUpStr = lineString.trimmed();
     QStringList split = cleanedUpStr.split("::");
-    qDebug()<<"Splitsize: "<<split.size();
+    if(split.size()<2) return pair;
+    //qDebug()<<"Splitsize: "<<split.size();
     QVector<QVariant> data;
     int i = 0;
     bool status = false;
@@ -687,10 +696,10 @@ QPair<QVector<QVariant>,bool> HyperlinkModel::getInfo(QString lineString)
             data << split[i];
         }
     }
-    QPair<QVector<QVariant>,bool> pair;
+
     pair.first = data;
     pair.second = status;
-    qDebug()<<data;
+    //qDebug()<<data;
     return pair;
 }
 

@@ -59,26 +59,18 @@ public:
 
     Hyperlink* returnroot() const;
 
-    void removeHyperlink(Hyperlink* link);
+    //bool removeHyperlink(Hyperlink* link);     <---- to change
 
-    bool copyNodes(const QModelIndex& link1,const QModelIndex& link2);
+    //bool copyNodes(const QModelIndex& link1,const QModelIndex& link2);
+
+private:
+    QPair<QVector<QVariant>,bool>  getInfo(QString lineString);
 
 private:
     //void showInfo();
     //bool hasToBeDisplayed(const QModelIndex index) const;
     bool filterStatus;
-    QPair<QVector<QVariant>,bool>  getInfo(QString lineString);
     Hyperlink *rootHyperlink;
-
-
-
-    // QAbstractItemModel interface
-
-
-    // QAbstractItemModel interface
-
-
-    // QAbstractItemModel interface
 
 };
 
